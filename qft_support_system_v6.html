@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quest Forward Tanzania — Technical Support System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.14.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #0f1117;
+  --bg2: #161921;
+  --bg3: #1d2130;
+  --bg4: #252a3a;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #e8eaf2;
+  --text2: #9ba1b5;
+  --text3: #636a82;
+  --accent: #4f7cff;
+  --accent2: #3d63e8;
+  --green: #2dd98a;
+  --green2: #1a9e61;
+  --amber: #f5a623;
+  --amber2: #c4821a;
+  --red: #ff5263;
+  --red2: #c73d4c;
+  --purple: #9b7dff;
+  --teal: #36d9cc;
+  --gold: #FFAE00;
+  --navy: #073763;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+/* Layout */
+.app { display: grid; grid-template-columns: 230px 1fr; grid-template-rows: 56px 1fr; min-height: 100vh; }
+.topbar { grid-column: 1/-1; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 14px; z-index:20; position: sticky; top: 0; }
+.sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+.main { overflow-y: auto; padding: 24px; }
+
+/* Brand */
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; letter-spacing: -0.3px; }
+.brand-dot { width: 30px; height: 30px; background: radial-gradient(circle at 30% 30%, var(--gold), #d68f00); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; box-shadow: 0 0 14px rgba(255,174,0,0.3); }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.menu-toggle { display: none; background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; width: 34px; height: 34px; align-items: center; justify-content: center; cursor: pointer; color: var(--text2); }
+
+/* Role switcher */
+.role-switch { display: flex; align-items: center; gap: 6px; background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 3px 4px 3px 12px; font-size: 12px; color: var(--text2); cursor: pointer; }
+.role-switch select { background: transparent; border: none; color: var(--text); font-family: var(--font); font-size: 12px; font-weight: 600; outline: none; cursor: pointer; padding: 4px 6px; }
+.role-switch select option { background: var(--bg3); }
+
+/* Nav */
+.nav-section { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; padding: 12px 10px 4px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; color: var(--text2); font-size: 13px; transition: all .15s; position: relative; }
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: rgba(79,124,255,0.12); color: var(--accent); }
+.nav-item .ti { font-size: 16px; }
+.nav-badge { margin-left: auto; background: var(--bg4); font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 20px; color: var(--text2); }
+.nav-badge.alert { background: rgba(255,82,99,0.2); color: var(--red); }
+.nav-hidden { display: none !important; }
+
+/* Cards */
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.card-title { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 16px; display:flex; align-items:center; justify-content:space-between; }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; position: relative; overflow: hidden; }
+.stat-card::after { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background: var(--accent); opacity:.6; }
+.stat-card.r::after { background: var(--red); }
+.stat-card.a::after { background: var(--amber); }
+.stat-card.g::after { background: var(--green); }
+.stat-card.t::after { background: var(--teal); }
+.stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+.stat-val { font-size: 28px; font-weight: 600; letter-spacing: -1px; }
+.stat-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+.stat-trend { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 500; padding: 2px 6px; border-radius: 4px; }
+.trend-up { background: rgba(45,217,138,0.1); color: var(--green); }
+.trend-down { background: rgba(255,82,99,0.1); color: var(--red); }
+
+/* Table */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Badges */
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
+.badge-red { background: rgba(255,82,99,0.15); color: var(--red); }
+.badge-amber { background: rgba(245,166,35,0.15); color: var(--amber); }
+.badge-green { background: rgba(45,217,138,0.15); color: var(--green); }
+.badge-blue { background: rgba(79,124,255,0.15); color: var(--accent); }
+.badge-purple { background: rgba(155,125,255,0.15); color: var(--purple); }
+.badge-gray { background: rgba(255,255,255,0.06); color: var(--text2); }
+.badge-gold { background: rgba(255,174,0,0.15); color: var(--gold); }
+
+/* Priority dot */
+.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.dot-red { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.dot-amber { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+.dot-green { background: var(--green); }
+.dot-blue { background: var(--accent); }
+
+/* Form */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1/-1; }
+label { font-size: 12px; font-weight: 500; color: var(--text2); }
+input, select, textarea { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 12px; color: var(--text); font-family: var(--font); font-size: 13px; outline: none; transition: border .15s; width: 100%; }
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+textarea { resize: vertical; min-height: 80px; }
+select option { background: var(--bg3); }
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; font-family: var(--font); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent2); }
+.btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border2); }
+.btn-secondary:hover { background: var(--bg4); }
+.btn-danger { background: rgba(255,82,99,0.15); color: var(--red); border: 1px solid rgba(255,82,99,0.3); }
+.btn-success { background: rgba(45,217,138,0.15); color: var(--green); border: 1px solid rgba(45,217,138,0.3); }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+
+/* Timeline */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item { display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding-bottom: 20px; position: relative; }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-item:not(:last-child)::before { content:''; position:absolute; left:16px; top:32px; bottom:0; width:1px; background: var(--border); }
+.tl-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; z-index:1; }
+.tl-content { padding-top: 6px; }
+.tl-title { font-weight: 500; font-size: 13px; margin-bottom: 2px; }
+.tl-meta { font-size: 11px; color: var(--text3); }
+.tl-note { margin-top: 8px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+/* Section header */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; gap: 12px; flex-wrap: wrap; }
+.section-title { font-size: 18px; font-weight: 600; letter-spacing: -0.4px; }
+.section-sub { font-size: 13px; color: var(--text3); margin-top: 2px; }
+
+/* Progress bar */
+.progress { height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; transition: width .4s; }
+
+/* Error ID */
+.error-id { font-family: var(--mono); font-size: 12px; color: var(--text3); background: var(--bg4); padding: 2px 6px; border-radius: 4px; }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; padding: 16px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: 14px; width: 600px; max-width: 100%; max-height: 90vh; overflow-y: auto; }
+.modal.wide { width: 760px; }
+.modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modal-body { padding: 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+/* School card */
+.school-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all .15s; }
+.school-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+.school-avatar { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0; }
+.school-info { flex: 1; min-width: 0; }
+.school-name { font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.school-meta { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.school-status { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+
+/* Charts */
+.mini-bar { display: flex; align-items: flex-end; gap: 3px; height: 40px; }
+.bar-col { background: var(--accent); border-radius: 2px 2px 0 0; min-width: 8px; opacity: .7; transition: opacity .15s; cursor: pointer; }
+.bar-col:hover { opacity: 1; }
+
+/* Cols */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* Alert banner */
+.alert-banner { display: flex; align-items: center; gap: 12px; background: rgba(255,82,99,0.08); border: 1px solid rgba(255,82,99,0.2); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; }
+.alert-banner .ti { color: var(--red); font-size: 18px; flex-shrink: 0; }
+.alert-banner-text { flex: 1; font-size: 13px; }
+.alert-banner-text strong { color: var(--red); }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg3); border: 1px solid var(--border2); border-radius: 10px; padding: 12px 16px; font-size: 13px; z-index: 200; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); transform: translateY(80px); opacity: 0; transition: all .3s; max-width: 90vw; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast .ti { color: var(--green); font-size: 18px; }
+
+/* Pages */
+.page { display: none; }
+.page.active { display: block; animation: fade .25s ease; }
+@keyframes fade { from { opacity:0; transform: translateY(6px);} to {opacity:1; transform:none;} }
+
+/* Chips */
+.chip-group { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); color: var(--text2); cursor: pointer; transition: all .15s; }
+.chip:hover, .chip.active { background: rgba(79,124,255,0.15); border-color: rgba(79,124,255,0.4); color: var(--accent); }
+
+/* Week pills */
+.week-track { display: flex; gap: 6px; flex-wrap: wrap; }
+.week-pill { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; width: 58px; height: 58px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg3); cursor: pointer; transition: all .15s; flex-shrink:0; }
+.week-pill:hover { border-color: var(--border2); }
+.week-pill.done { background: rgba(45,217,138,0.12); border-color: rgba(45,217,138,0.3); }
+.week-pill.due { background: rgba(245,166,35,0.12); border-color: rgba(245,166,35,0.4); }
+.week-pill.overdue { background: rgba(255,82,99,0.12); border-color: rgba(255,82,99,0.4); }
+.week-pill.active { box-shadow: 0 0 0 2px var(--accent); }
+.week-pill .wk-num { font-size: 11px; font-weight: 700; }
+.week-pill .wk-ic { font-size: 15px; }
+
+/* Avatar */
+.av { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+
+/* Notification dot */
+.notif-dot { width: 8px; height: 8px; background: var(--red); border-radius: 50%; position: absolute; top: 4px; right: 4px; }
+
+.empty { color: var(--text3); text-align: center; padding: 40px 0; font-size: 13px; }
+.empty .ti { font-size: 36px; display: block; margin-bottom: 12px; opacity: .5; }
+
+/* Detail header */
+.detail-hero { display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+.detail-hero .school-avatar { width:56px; height:56px; font-size:20px; border-radius:14px; }
+
+/* Responsive */
+@media (max-width: 920px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 56px 1fr; }
+  .sidebar { position: fixed; top: 56px; left: 0; bottom: 0; width: 230px; transform: translateX(-100%); transition: transform .25s; z-index: 30; }
+  .sidebar.open { transform: translateX(0); box-shadow: 0 0 40px rgba(0,0,0,0.6); }
+  .menu-toggle { display: flex; }
+  .two-col, .three-col, .form-grid { grid-template-columns: 1fr; }
+  .main { padding: 16px; }
+  #page-report > div, #page-followup > div, #page-tracker .detail-grid { grid-template-columns: 1fr !important; }
+}
+.sidebar-backdrop { display:none; position:fixed; inset:56px 0 0 0; background:rgba(0,0,0,0.5); z-index:25; }
+.sidebar-backdrop.show { display:block; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- Top Bar -->
+<header class="topbar">
+  <div class="menu-toggle" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></div>
+  <div class="brand">
+    <div class="brand-dot">QF</div>
+    <span class="hide-sm">Quest Forward Tanzania</span>
+  </div>
+  <span style="color:var(--text3);font-size:12px" class="hide-sm">/ Technical Support</span>
+  <div class="topbar-right">
+    <div class="role-switch" title="Switch role view">
+      <i class="ti ti-user-cog" style="font-size:14px"></i>
+      <select id="role-select" onchange="changeRole()"></select>
+    </div>
+    <div style="position:relative">
+      <i class="ti ti-bell" style="font-size:20px;color:var(--text2);cursor:pointer" onclick="showPage('followup')"></i>
+      <div class="notif-dot" id="notif-dot"></div>
+    </div>
+  </div>
+</header>
+
+<div class="sidebar-backdrop" id="sb-backdrop" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+  <div class="nav-section">Overview</div>
+  <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ti ti-layout-dashboard"></i>Dashboard <span class="nav-badge alert" id="nav-crit">0</span></div>
+  <div class="nav-item" data-page="report" onclick="showPage('report')"><i class="ti ti-bug"></i>Report Error</div>
+  <div class="nav-item" data-page="tracker" onclick="showPage('tracker')"><i class="ti ti-list-check"></i>Error Tracker <span class="nav-badge" id="nav-track">0</span></div>
+
+  <div class="nav-section">Support</div>
+  <div class="nav-item" data-page="followup" onclick="showPage('followup')"><i class="ti ti-headset"></i>Follow-Up Center <span class="nav-badge alert" id="nav-fu">0</span></div>
+  <div class="nav-item" data-page="weekly" onclick="showPage('weekly')"><i class="ti ti-calendar-week"></i>Weekly Check-Ins</div>
+  <div class="nav-item" data-page="schools" onclick="showPage('schools')"><i class="ti ti-school"></i>School Profiles</div>
+  <div class="nav-item" data-page="troubleshoot" onclick="showPage('troubleshoot')"><i class="ti ti-tools"></i>Troubleshooting</div>
+
+  <div class="nav-section" data-role="admin">Admin</div>
+  <div class="nav-item" data-page="analytics" data-role="admin" onclick="showPage('analytics')"><i class="ti ti-chart-bar"></i>Analytics</div>
+  <div class="nav-item" data-page="team" data-role="admin" onclick="showPage('team')"><i class="ti ti-users-group"></i>Sub-Admins</div>
+
+  <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-item" onclick="exportData()"><i class="ti ti-download"></i>Export Data</div>
+    <div class="nav-item" onclick="confirmReset()"><i class="ti ti-refresh"></i>Reset Demo</div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main" id="main"></main>
+</div>
+
+<!-- Generic Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modal-box">
+    <div class="modal-header">
+      <div style="font-weight:600" id="modal-title">Modal</div>
+      <i class="ti ti-x" style="cursor:pointer;font-size:18px;color:var(--text2)" onclick="closeModal()"></i>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg">Action completed</span></div>
+
+<script>
+/* ============================================================
+   QUEST FORWARD TANZANIA — TECHNICAL SUPPORT SYSTEM
+   Refined build: live state, persistence, weekly check-ins,
+   per-school profiles, sub-admins, role-based views.
+   ============================================================ */
+
+/* ---------- Persistence helpers (window.storage with fallback) ---------- */
+const HAS_STORE = (typeof window !== 'undefined' && window.storage && typeof window.storage.get === 'function');
+const mem = {};
+async function dbGet(k){ try { if(HAS_STORE){ const r = await window.storage.get(k); return r ? JSON.parse(r.value) : null; } } catch(e){} return (k in mem)? mem[k] : null; }
+async function dbSet(k,v){ mem[k]=v; try { if(HAS_STORE){ await window.storage.set(k, JSON.stringify(v)); } } catch(e){} }
+
+/* ---------- Term config ---------- */
+const TERM = { label: 'Term 2 · 2026', weeks: 8 };
+
+/* ---------- Sub-admins / team (seed — live list is S.team, managed by System Admin) ---------- */
+const SEED_TEAM = [
+  { id:'kn', name:'K. Njoro',     role:'Senior Engineer · Lead',     zone:'Moshi Zone',    color:'var(--accent)', email:'knjoro@questforward.org',  phone:'+255 658 066 983', status:'active' },
+  { id:'fa', name:'F. Amani',     role:'Senior Engineer',            zone:'Kilema–Kibosho', color:'var(--green)',  email:'famani@questforward.org',  phone:'+255 754 110 220', status:'onsite' },
+  { id:'th', name:'T. Hassan',    role:'Senior Engineer',            zone:'Rombo',         color:'var(--purple)', email:'thassan@questforward.org', phone:'+255 762 330 440', status:'active' },
+  { id:'cm', name:'Clinton Mbowe',role:'IT Officer · Platform',      zone:'Remote / HQ',   color:'var(--teal)',   email:'cmbowe@questforward.org',  phone:'+255 715 880 990', status:'remote' },
+];
+function teamById(id){ return (S.team||[]).find(t=>t.id===id) || null; }
+const SA_COLORS = ['var(--accent)','var(--green)','var(--purple)','var(--teal)','var(--amber)','var(--red)','#e879f9','#38bdf8','#fb923c','#a3e635'];
+function nextSAColor(){ return SA_COLORS[(S.team||[]).length % SA_COLORS.length]; }
+function nextSAId(name){
+  let base = name.split(' ').filter(Boolean).map(w=>w[0]).join('').toLowerCase().slice(0,3) || 'sa';
+  let id = base, n = 2;
+  while ((S.team||[]).some(t=>t.id===id)) { id = base + (n++); }
+  return id;
+}
+
+/* ---------- Seed schools (each with its own profile + assigned sub-admin) ---------- */
+const SEED_SCHOOLS = [
+  { id:'kilema',  name:'Kilema Secondary',     zone:'Rombo',       students:340, tablets:48, routers:2, admin:'th', contact:'Mr. Eliya Mushi', contactRole:'IT Coordinator', phone:'+255 712 000 101', lrs:'192.168.0.10', isp:'Vodacom Fibre' },
+  { id:'moshiu',  name:'Moshi Urban Sec.',     zone:'Moshi Urban', students:510, tablets:72, routers:3, admin:'kn', contact:'Ms. Neema Lyimo', contactRole:'Head Teacher',   phone:'+255 712 000 102', lrs:'192.168.0.10', isp:'TTCL Fibre' },
+  { id:'kibosho', name:'Kibosho Boys Sec.',    zone:'Hai',         students:280, tablets:40, routers:2, admin:'fa', contact:'Mr. Baraka Swai',  contactRole:'IT Coordinator', phone:'+255 712 000 103', lrs:'192.168.0.10', isp:'Vodacom Fibre' },
+  { id:'marangu', name:'Marangu Girls Sec.',   zone:'Moshi Rural', students:220, tablets:32, routers:1, admin:'kn', contact:'Ms. Asha Kileo',   contactRole:'Quest Coordinator', phone:'+255 712 000 104', lrs:'192.168.0.10', isp:'Airtel' },
+  { id:'mweka',   name:'Mweka Secondary',      zone:'Hai',         students:195, tablets:28, routers:1, admin:'fa', contact:'Mr. John Massawe', contactRole:'IT Coordinator', phone:'+255 712 000 105', lrs:'192.168.0.10', isp:'TTCL Fibre' },
+  { id:'oldmoshi',name:'Old Moshi Sec.',       zone:'Moshi Rural', students:310, tablets:44, routers:2, admin:'kn', contact:'Ms. Grace Mollel', contactRole:'Head Teacher',   phone:'+255 712 000 106', lrs:'192.168.0.10', isp:'Vodacom Fibre' },
+  { id:'machame', name:'Machame Secondary',    zone:'Hai',         students:260, tablets:38, routers:2, admin:'fa', contact:'Mr. Frank Mushi',  contactRole:'IT Coordinator', phone:'+255 712 000 107', lrs:'192.168.0.10', isp:'Airtel' },
+  { id:'uru',     name:'Uru Secondary',        zone:'Moshi Rural', students:180, tablets:24, routers:1, admin:'kn', contact:'Ms. Tatu Hassan',  contactRole:'Quest Coordinator', phone:'+255 712 000 108', lrs:'192.168.0.10', isp:'TTCL' },
+  { id:'moshig',  name:'Moshi Girls Sec.',     zone:'Moshi Urban', students:400, tablets:56, routers:2, admin:'kn', contact:'Ms. Rehema Kimaro',contactRole:'Head Teacher',   phone:'+255 712 000 109', lrs:'192.168.0.10', isp:'Vodacom Fibre' },
+  { id:'rombo',   name:'Rombo Secondary',      zone:'Rombo',       students:155, tablets:22, routers:1, admin:'th', contact:'Mr. Daudi Massawe',contactRole:'IT Coordinator', phone:'+255 712 000 110', lrs:'192.168.0.10', isp:'Airtel' },
+  { id:'pasua',   name:'Pasua Secondary',      zone:'Moshi Urban', students:290, tablets:42, routers:2, admin:'kn', contact:'Ms. Salma Juma',   contactRole:'Quest Coordinator', phone:'+255 712 000 111', lrs:'192.168.0.10', isp:'TTCL Fibre' },
+  { id:'mkuu',    name:'Mkuu Secondary',       zone:'Rombo',       students:170, tablets:24, routers:1, admin:'th', contact:'Mr. Joseph Lema',  contactRole:'IT Coordinator', phone:'+255 712 000 112', lrs:'192.168.0.10', isp:'Airtel' },
+  { id:'arusha',  name:'Arusha Technical',     zone:'Arusha',      students:445, tablets:60, routers:3, admin:'cm', contact:'Mr. Peter Nkya',   contactRole:'IT Coordinator', phone:'+255 712 000 113', lrs:'192.168.0.10', isp:'TTCL Fibre' },
+];
+
+/* ---------- Seed errors ---------- */
+const SEED_ERRORS = [
+  { id:'QFT-0241', title:'WiFi router offline',       school:'kilema',  cat:'Connectivity', priority:'critical', status:'open',      hours:3,  assigned:'fa', desc:'Lab router not powering on. Whole computer lab offline.', created:isoAgo(3) },
+  { id:'QFT-0240', title:'Quest platform down',       school:'moshiu',  cat:'Platform',     priority:'critical', status:'open',      hours:5,  assigned:'cm', desc:'Quest app fails to load for all students. Server reachable but app shows blank.', created:isoAgo(5) },
+  { id:'QFT-0239', title:'Tablets not charging',      school:'kibosho', cat:'Hardware',     priority:'critical', status:'progress',  hours:7,  assigned:'fa', desc:'12 tablets on charging hub 2 not charging. Faulty hub suspected.', created:isoAgo(7) },
+  { id:'QFT-0238', title:'Projector HDMI fault',      school:'marangu', cat:'Hardware',     priority:'high',     status:'progress',  hours:26, assigned:'kn', desc:'Projector in Room 3B shows no signal over HDMI.', created:isoAgo(26) },
+  { id:'QFT-0237', title:'Student login failures',    school:'mweka',   cat:'Accounts',     priority:'high',     status:'escalated', hours:28, assigned:'cm', desc:'34 students cannot log into Quest. Password reset not received.', created:isoAgo(28) },
+  { id:'QFT-0236', title:'Router slow speed',         school:'oldmoshi',cat:'Connectivity', priority:'medium',   status:'open',      hours:48, assigned:'kn', desc:'LAN speeds dropped below 2Mbps in afternoon sessions.', created:isoAgo(48) },
+  { id:'QFT-0235', title:"Laptop won't boot",         school:'uru',     cat:'Hardware',     priority:'medium',   status:'progress',  hours:26, assigned:'kn', desc:'Teacher laptop stuck in boot loop after update.', created:isoAgo(26) },
+  { id:'QFT-0234', title:'Projector display issue',   school:'uru',     cat:'Hardware',     priority:'low',      status:'resolved',  hours:96, assigned:'kn', desc:'HDMI cable replaced and tested OK.', created:isoAgo(96) },
+  { id:'QFT-0233', title:'Quest login restored',      school:'oldmoshi',cat:'Accounts',     priority:'high',     status:'resolved',  hours:120,assigned:'cm', desc:'Batch password reset completed. 34/34 active.', created:isoAgo(120) },
+  { id:'QFT-0232', title:'Power socket fault',        school:'machame', cat:'Power',        priority:'medium',   status:'open',      hours:72, assigned:'', desc:'Wall socket in lab sparking — disconnected for safety.', created:isoAgo(72) },
+  { id:'QFT-0231', title:'3 tablets dead screens',    school:'machame', cat:'Hardware',     priority:'high',     status:'escalated', hours:144,assigned:'fa', desc:'3 tablets with cracked/dead screens. Warranty claim submitted.', created:isoAgo(144) },
+  { id:'QFT-0230', title:'Internet cable cut',        school:'moshig',  cat:'Connectivity', priority:'critical', status:'resolved',  hours:168,assigned:'th', desc:'Fibre line repaired by ISP. 45Mbps confirmed.', created:isoAgo(168) },
+];
+
+function isoAgo(h){ const d=new Date(); d.setHours(d.getHours()-h); return d.toISOString(); }
+
+/* ---------- Sub-categories ---------- */
+const SUBCATS = {
+  Connectivity: ['WiFi router down','Slow internet','No internet access','LRS unreachable','Switch fault'],
+  Hardware: ['Tablet not charging','Tablet screen broken',"Laptop won't start",'Projector fault','Keyboard/mouse','Printer issue'],
+  Platform: ['Quest login failure','Quest app crash','Slow platform','Content not loading','Teacher dashboard error'],
+  Power: ['No electricity','Generator failure','Socket fault','UPS/battery backup','Surge damage'],
+  Accounts: ['Student login','Teacher login','Password reset','Account locked','New account needed'],
+  Other: ['Other issue']
+};
+
+/* ---------- Troubleshooting guides (seed — live list is S.guides, managed by System Admin) ---------- */
+const SEED_GUIDES = [
+  { icon:'ti-wifi-off', title:'WiFi / Internet Not Working', cat:'Connectivity', steps:[
+    'Check if the router power light is ON. If off, check the power cable and switch.',
+    'Restart the router: unplug power for 30 seconds, plug back in and wait 2 minutes.',
+    'Check the ethernet cable from the ISP wall socket to the router is firmly connected.',
+    'Check if other devices (teacher laptop) can connect. If yes, it is a device issue.',
+    'Confirm the LRS is reachable: ping 192.168.0.10 from a connected device.',
+    'Log in to router admin at 192.168.0.1 and check WAN status.',
+    'If still down after 20 mins, report via this system as CRITICAL.'
+  ]},
+  { icon:'ti-device-tablet', title:'Tablets Not Charging', cat:'Hardware', steps:[
+    'Test with a known-working USB-C cable first.',
+    'Try a different port on the charging station/hub.',
+    'Gently clear debris/lint from the tablet charging port with a dry brush.',
+    'Charge 1–2 tablets directly from the wall socket, not the hub.',
+    'If multiple tablets fail on one hub, test/replace the hub.',
+    'If a single tablet still fails: note its serial number and report as MEDIUM hardware.',
+    'Use only QFT-supplied charging equipment — never third-party chargers.'
+  ]},
+  { icon:'ti-apps', title:'Quest Platform Login Failures', cat:'Platform', steps:[
+    'Confirm internet works first — open any website in the browser.',
+    'Clear browser cache: Ctrl+Shift+Delete → clear cookies & cached files.',
+    'Try an Incognito/Private window.',
+    'Confirm the username format: firstname.lastname@school.qft',
+    'For a forgotten password use "Forgot Password" — reset goes to the teacher.',
+    'If a teacher account is locked, contact the platform team immediately.',
+    'If many students are affected at once, report as CRITICAL — likely platform-side.'
+  ]},
+  { icon:'ti-bolt', title:'No Power / Generator Issues', cat:'Power', steps:[
+    'Check the main breaker panel for any tripped breaker.',
+    'Check whether neighbouring buildings have power (TANESCO outage vs local fault).',
+    'For a generator: check fuel, oil and coolant levels.',
+    'Start the generator manually if auto-start failed — follow the posted procedure.',
+    'Check UPS units — router and LRS must stay on UPS power.',
+    'Do NOT attempt electrical repairs — contact a licensed electrician.',
+    'If power loss stops all tech operation, report as CRITICAL.'
+  ]},
+  { icon:'ti-video', title:'Projector Not Working', cat:'Hardware', steps:[
+    'Check the power cable at both the projector and the socket.',
+    'Press the power button twice (some models need a double press).',
+    'Check HDMI/VGA connections at both ends — try a different cable.',
+    'On the laptop press Windows + P → choose Duplicate or Extend.',
+    'Match the projector input source to the cable (HDMI1, VGA, etc).',
+    'A red/orange lamp indicator means the lamp may need replacing.',
+    'Let the projector cool 5 minutes if it auto-shut from overheating.'
+  ]},
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let S = { schools: [], team: [], errors: [], checkins: {}, followups: [], comms: [], guides: [], manuals: [], seq: 242 };
+let activeRole = 'admin';            // admin | subadmin | school
+let activeSubadmin = 'kn';           // when role = subadmin
+let activeSchoolScope = 'kilema';    // when role = school
+let currentPage = 'dashboard';
+let trackerFilter = 'all';
+let trackerSearch = '';
+let selectedSchoolId = null;
+let selectedWeek = currentWeek();
+
+function currentWeek(){
+  // demo: derive a "current week" within the term (1..weeks)
+  return 4;
+}
+
+async function loadState(){
+  const saved = await dbGet('qft_state_v2');
+  if (saved && saved.schools && saved.errors) {
+    S = saved;
+    // backwards-compat: older saves had no team list
+    if (!Array.isArray(S.team) || !S.team.length) { S.team = JSON.parse(JSON.stringify(SEED_TEAM)); await persist(); }
+    // backwards-compat: older saves had no guides / manuals
+    if (!Array.isArray(S.guides) || !S.guides.length) { S.guides = JSON.parse(JSON.stringify(SEED_GUIDES)); await persist(); }
+    if (!Array.isArray(S.manuals)) { S.manuals = []; await persist(); }
+    return;
+  }
+  // initialise fresh
+  S.team = JSON.parse(JSON.stringify(SEED_TEAM));
+  S.guides = JSON.parse(JSON.stringify(SEED_GUIDES));
+  S.manuals = [];
+  S.schools = JSON.parse(JSON.stringify(SEED_SCHOOLS));
+  S.errors = JSON.parse(JSON.stringify(SEED_ERRORS));
+  S.checkins = {};
+  // seed some weekly check-ins so the system has history
+  S.schools.forEach(sc => {
+    S.checkins[sc.id] = {};
+    for (let w=1; w<=TERM.weeks; w++){
+      if (w < selectedWeek) {
+        // past weeks mostly completed
+        const done = !(sc.id==='machame' && w===2) && !(sc.id==='mweka' && w===3);
+        if (done) S.checkins[sc.id][w] = sampleCheckin(sc.id, w);
+      }
+    }
+  });
+  S.followups = [];
+  S.comms = [
+    { school:'kilema', by:'F. Amani', when:isoAgo(2), text:'Confirmed technician visit. Head teacher notified. Lab closed until repair.' },
+    { school:'moshiu', by:'C. Mbowe', when:isoAgo(3), text:'Platform team confirmed remote fix in progress. Expected 2h.' },
+    { school:'kibosho',by:'F. Amani', when:isoAgo(20),text:'Ordered replacement USB-C hub. Arrives tomorrow. 12 tablets offline temporarily.' },
+  ];
+  S.seq = 242;
+  await persist();
+}
+function sampleCheckin(schoolId, w){
+  const states = ['green','green','green','amber','green'];
+  return {
+    week:w, status: states[(w+schoolId.length)%states.length],
+    by: teamById(schoolById(schoolId).admin)?.name || 'Field Team',
+    when: isoAgo((selectedWeek-w)*168 + 12),
+    connectivity:'ok', tablets:'ok', platform:'ok', power:'ok',
+    note: w===1 ? 'Term start setup verified. All systems nominal.' : 'Routine weekly check — devices healthy, LRS reachable.'
+  };
+}
+async function persist(){ await dbSet('qft_state_v2', S); }
+
+function schoolById(id){ return S.schools.find(s=>s.id===id); }
+function errorsForSchool(id){ return S.errors.filter(e=>e.school===id); }
+function openErrorsForSchool(id){ return errorsForSchool(id).filter(e=>e.status!=='resolved'); }
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function initials(n){ return n.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
+function ageStr(hours){
+  if (hours==null) return '—';
+  if (hours < 1) return Math.round(hours*60)+'m';
+  if (hours < 24) return Math.round(hours)+'h';
+  const d=Math.floor(hours/24), h=Math.round(hours%24);
+  return d+'d'+(h?(' '+h+'h'):'');
+}
+function relTime(iso){
+  if(!iso) return '';
+  const diff = (Date.now()-new Date(iso).getTime())/36e5;
+  if (diff<1) return Math.max(1,Math.round(diff*60))+'m ago';
+  if (diff<24) return Math.round(diff)+'h ago';
+  return Math.round(diff/24)+'d ago';
+}
+const PRI = { critical:{label:'Critical', badge:'badge-red', dot:'dot-red'}, high:{label:'High', badge:'badge-amber', dot:'dot-amber'}, medium:{label:'Medium', badge:'badge-blue', dot:'dot-blue'}, low:{label:'Low', badge:'badge-green', dot:'dot-green'} };
+const STAT = { open:{label:'Open', badge:'badge-red'}, progress:{label:'In Progress', badge:'badge-amber'}, escalated:{label:'Escalated', badge:'badge-purple'}, resolved:{label:'Resolved', badge:'badge-green'} };
+const SLA = { critical:2, high:8, medium:24, low:72 };
+function slaState(e){
+  if (e.status==='resolved') return 'met';
+  return e.hours > SLA[e.priority] ? 'breach' : 'ok';
+}
+const CAT_META = {
+  Connectivity:{ic:'ti-wifi-off', color:'var(--amber)'},
+  Hardware:{ic:'ti-device-laptop', color:'var(--red)'},
+  Platform:{ic:'ti-apps', color:'var(--accent)'},
+  Power:{ic:'ti-bolt', color:'var(--purple)'},
+  Accounts:{ic:'ti-user-x', color:'var(--teal)'},
+  Other:{ic:'ti-dots', color:'var(--text2)'}
+};
+function schoolColor(id){
+  const open = openErrorsForSchool(id);
+  const crit = open.some(e=>e.priority==='critical');
+  if (crit) return {key:'critical', bg:'rgba(255,82,99,0.2)', tc:'var(--red)', label:'Critical', badge:'badge-red'};
+  if (open.length) return {key:'warning', bg:'rgba(245,166,35,0.2)', tc:'var(--amber)', label:'Issues', badge:'badge-amber'};
+  return {key:'ok', bg:'rgba(45,217,138,0.12)', tc:'var(--green)', label:'Healthy', badge:'badge-green'};
+}
+
+/* ---------- Role scoping ---------- */
+function visibleSchools(){
+  if (activeRole==='admin') return S.schools;
+  if (activeRole==='subadmin') return S.schools.filter(s=>s.admin===activeSubadmin);
+  if (activeRole==='school') return S.schools.filter(s=>s.id===activeSchoolScope);
+  return S.schools;
+}
+function visibleErrors(){
+  const ids = new Set(visibleSchools().map(s=>s.id));
+  return S.errors.filter(e=>ids.has(e.school));
+}
+function roleLabel(){
+  if (activeRole==='admin') return 'System Admin — all schools';
+  if (activeRole==='subadmin'){ const t=teamById(activeSubadmin); return (t?t.name:'Sub-Admin')+' — '+visibleSchools().length+' schools'; }
+  const sc = schoolById(activeSchoolScope); return (sc?sc.name:'School')+' — single school view';
+}
+
+/* ============================================================
+   ROUTING
+   ============================================================ */
+const PAGES = ['dashboard','report','tracker','followup','weekly','schools','troubleshoot','analytics','team'];
+function showPage(name){
+  currentPage = name;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.page===name));
+  if (window.innerWidth<=920) closeSidebar();
+  render();
+  $('main').scrollTop = 0;
+}
+function render(){
+  applyRoleVisibility();
+  updateBadges();
+  const m = $('main');
+  const r = {
+    dashboard: renderDashboard, report: renderReport, tracker: renderTracker,
+    followup: renderFollowup, weekly: renderWeekly, schools: renderSchools,
+    troubleshoot: renderTroubleshoot, analytics: renderAnalytics, team: renderTeam
+  }[currentPage] || renderDashboard;
+  m.innerHTML = r();
+  if (currentPage==='report') initReportForm();
+  if (currentPage==='tracker') refreshTrackerTable();
+}
+function applyRoleVisibility(){
+  const adminOnly = activeRole!=='admin';
+  document.querySelectorAll('[data-role="admin"]').forEach(el=>el.classList.toggle('nav-hidden', adminOnly));
+  // school role hides the team page entirely; redirect if needed
+  if (adminOnly && (currentPage==='analytics'||currentPage==='team')) { currentPage='dashboard'; }
+}
+function updateBadges(){
+  const errs = visibleErrors();
+  const crit = errs.filter(e=>e.priority==='critical' && e.status!=='resolved').length;
+  const openTrack = errs.filter(e=>e.status!=='resolved').length;
+  const fu = errs.filter(e=>e.status!=='resolved' && (slaState(e)==='breach' || e.status==='escalated')).length
+           + weeklyDueCount();
+  setBadge('nav-crit', crit, true);
+  setBadge('nav-track', openTrack, false);
+  setBadge('nav-fu', fu, true);
+  $('notif-dot').style.display = (crit+fu)>0 ? 'block':'none';
+}
+function setBadge(id, n, alert){
+  const el=$(id); if(!el) return;
+  el.textContent=n; el.style.display = n>0 ? 'inline-block':'none';
+  el.classList.toggle('alert', !!alert && n>0);
+}
+function weeklyDueCount(){
+  let n=0;
+  visibleSchools().forEach(s=>{ if(!(S.checkins[s.id] && S.checkins[s.id][selectedWeek])) n++; });
+  return n;
+}
+
+/* ---------- Sidebar (mobile) ---------- */
+function toggleSidebar(){ $('sidebar').classList.toggle('open'); $('sb-backdrop').classList.toggle('show'); }
+function closeSidebar(){ $('sidebar').classList.remove('open'); $('sb-backdrop').classList.remove('show'); }
+
+/* ---------- Role switching ---------- */
+function buildRoleOptions(){
+  const sel = $('role-select');
+  let html = `<optgroup label="Admin"><option value="admin::">System Admin (all)</option></optgroup>`;
+  html += `<optgroup label="Sub-Admins">` + S.team.map(t=>`<option value="subadmin::${t.id}">${esc(t.name)}</option>`).join('') + `</optgroup>`;
+  html += `<optgroup label="School view">` + S.schools.map(s=>`<option value="school::${s.id}">${esc(s.name)}</option>`).join('') + `</optgroup>`;
+  sel.innerHTML = html;
+}
+function changeRole(){
+  const v = $('role-select').value.split('::');
+  activeRole = v[0];
+  if (activeRole==='subadmin') activeSubadmin = v[1];
+  if (activeRole==='school') activeSchoolScope = v[1];
+  showPage('dashboard');
+  showToast('Now viewing as: ' + roleLabel());
+}
+
+/* ---------- Toast ---------- */
+function showToast(msg){
+  const t=$('toast'); $('toast-msg').textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'), 3200);
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+function renderDashboard(){
+  const errs = visibleErrors();
+  const schools = visibleSchools();
+  const open = errs.filter(e=>e.status!=='resolved');
+  const crit = open.filter(e=>e.priority==='critical');
+  const prog = errs.filter(e=>e.status==='progress');
+  const resolvedToday = errs.filter(e=>e.status==='resolved' && e.hours<=24).length;
+  const breaches = open.filter(e=>slaState(e)==='breach');
+  const healthy = schools.filter(s=>schoolColor(s.id).key==='ok').length;
+  const checkedThisWeek = schools.filter(s=>S.checkins[s.id] && S.checkins[s.id][selectedWeek]).length;
+  const critSchools = [...new Set(crit.map(e=>schoolById(e.school).name))];
+
+  // 7-day volume from createdAt
+  const vol = [0,0,0,0,0,0,0];
+  errs.forEach(e=>{ const d=Math.floor(e.hours/24); if(d>=0&&d<7) vol[6-d]++; });
+  const maxVol = Math.max(1,...vol);
+  const dayLabels = (()=>{ const out=[]; const wd=['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; const n=new Date(); for(let i=6;i>=0;i--){ const d=new Date(n); d.setDate(n.getDate()-i); out.push(wd[d.getDay()]); } return out; })();
+
+  // category breakdown
+  const catCount = {}; open.forEach(e=>catCount[e.cat]=(catCount[e.cat]||0)+1);
+  const catRows = Object.keys(CAT_META).filter(c=>catCount[c]).sort((a,b)=>catCount[b]-catCount[a])
+    .map(c=>{ const n=catCount[c], pct=Math.round(n/Math.max(1,open.length)*100); const m=CAT_META[c];
+      return `<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+        <span><i class="ti ${m.ic}" style="font-size:13px;vertical-align:-2px;margin-right:5px;color:${m.color}"></i>${c}</span>
+        <span style="color:var(--text2)">${n} open</span></div>
+        <div class="progress"><div class="progress-fill" style="width:${pct}%;background:${m.color}"></div></div></div>`;
+    }).join('') || `<div class="empty" style="padding:20px 0"><i class="ti ti-circle-check"></i>No open issues</div>`;
+
+  // critical table
+  const critRows = open.sort((a,b)=>({critical:0,high:1,medium:2,low:3}[a.priority]-{critical:0,high:1,medium:2,low:3}[b.priority]))
+    .slice(0,6).map(e=>{
+      const sc=schoolById(e.school);
+      return `<tr style="cursor:pointer" onclick="openErrorModal('${e.id}')">
+        <td><span class="dot ${PRI[e.priority].dot}"></span></td>
+        <td><span style="font-size:12px;font-weight:500">${esc(e.title)}</span><br><span class="error-id">${e.id}</span></td>
+        <td style="font-size:12px;color:var(--text2)">${esc(sc.name)}</td>
+        <td><span class="badge ${STAT[e.status].badge}">${STAT[e.status].label}</span></td>
+        <td style="font-size:12px;color:${slaState(e)==='breach'?'var(--red)':'var(--text3)'}">${ageStr(e.hours)}</td></tr>`;
+    }).join('') || `<tr><td colspan="5"><div class="empty" style="padding:20px 0"><i class="ti ti-circle-check"></i>No active errors</div></td></tr>`;
+
+  return `
+  <div class="section-header">
+    <div>
+      <div class="section-title">System Overview</div>
+      <div class="section-sub">${esc(roleLabel())} · ${TERM.label}</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-secondary btn-sm" onclick="showPage('report')"><i class="ti ti-plus"></i> New Report</button>
+      <button class="btn btn-primary btn-sm" onclick="showPage('followup')"><i class="ti ti-headset"></i> Support Queue</button>
+    </div>
+  </div>
+
+  ${crit.length ? `<div class="alert-banner">
+    <i class="ti ti-alert-triangle"></i>
+    <div class="alert-banner-text"><strong>${crit.length} Critical Error${crit.length>1?'s':''}</strong> need immediate attention — ${esc(critSchools.slice(0,3).join(', '))}${critSchools.length>3?' +'+(critSchools.length-3):''}.</div>
+    <button class="btn btn-danger btn-sm" onclick="showPage('tracker')">View</button>
+  </div>`:''}
+
+  <div class="stats-grid">
+    <div class="stat-card r"><div class="stat-label">Open Errors</div><div class="stat-val" style="color:var(--red)">${open.length}</div><div class="stat-sub">${crit.length} critical · ${breaches.length} SLA breach</div></div>
+    <div class="stat-card a"><div class="stat-label">In Progress</div><div class="stat-val" style="color:var(--amber)">${prog.length}</div><div class="stat-sub">being worked on now</div></div>
+    <div class="stat-card g"><div class="stat-label">Resolved (24h)</div><div class="stat-val" style="color:var(--green)">${resolvedToday}</div><div class="stat-sub"><span class="stat-trend trend-up"><i class="ti ti-check" style="font-size:10px"></i>recently closed</span></div></div>
+    <div class="stat-card t"><div class="stat-label">Schools Healthy</div><div class="stat-val" style="color:var(--teal)">${healthy}<span style="font-size:16px;color:var(--text3)">/${schools.length}</span></div><div class="stat-sub">${schools.length-healthy} need attention</div></div>
+    <div class="stat-card"><div class="stat-label">Week ${selectedWeek} Check-Ins</div><div class="stat-val">${checkedThisWeek}<span style="font-size:16px;color:var(--text3)">/${schools.length}</span></div><div class="stat-sub" style="cursor:pointer;color:var(--accent)" onclick="showPage('weekly')">${schools.length-checkedThisWeek} still due →</div></div>
+  </div>
+
+  <div class="two-col" style="align-items:start">
+    <div class="card">
+      <div class="card-title">Active Priorities <a style="font-size:11px;color:var(--accent);cursor:pointer;text-transform:none;letter-spacing:0" onclick="showPage('tracker')">View all</a></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th></th><th>Error</th><th>School</th><th>Status</th><th>Age</th></tr></thead>
+        <tbody>${critRows}</tbody>
+      </table></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Open Errors by Category</div>
+      <div style="display:flex;flex-direction:column;gap:12px">${catRows}</div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+        <div class="card-title">7-Day Report Volume</div>
+        <div class="mini-bar" style="height:54px">
+          ${vol.map((v,i)=>`<div class="bar-col" style="flex:1;height:${Math.max(6,v/maxVol*100)}%;${i>=5?'background:var(--amber)':''}" title="${dayLabels[i]}: ${v}"></div>`).join('')}
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:4px">
+          ${dayLabels.map(d=>`<span>${d}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col" style="margin-top:20px;align-items:start">
+    <div class="card">
+      <div class="card-title">School Health Snapshot</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">
+        ${schools.map(s=>{ const c=schoolColor(s.id); const oc=openErrorsForSchool(s.id).length;
+          return `<div class="school-card" style="padding:10px 12px;gap:10px" onclick="openSchool('${s.id}')">
+            <div class="school-avatar" style="width:32px;height:32px;font-size:12px;background:${c.bg};color:${c.tc}">${initials(s.name)}</div>
+            <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.name)}</div>
+            <div style="font-size:10px;color:var(--text3)">${oc} open</div></div>
+            <span class="dot ${c.key==='critical'?'dot-red':c.key==='warning'?'dot-amber':'dot-green'}"></span>
+          </div>`;}).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Recent Resolutions</div>
+      ${renderResolutionTimeline(errs)}
+    </div>
+  </div>`;
+}
+
+function renderResolutionTimeline(errs){
+  const res = errs.filter(e=>e.status==='resolved').sort((a,b)=>a.hours-b.hours).slice(0,4);
+  if (!res.length) return `<div class="empty" style="padding:20px 0"><i class="ti ti-history"></i>No resolutions yet</div>`;
+  return `<div class="timeline">${res.map(e=>{ const sc=schoolById(e.school); const t=teamById(e.assigned);
+    return `<div class="tl-item">
+      <div class="tl-icon" style="background:rgba(45,217,138,0.15)"><i class="ti ti-check" style="color:var(--green);font-size:14px"></i></div>
+      <div class="tl-content">
+        <div class="tl-title">${e.id} — ${esc(e.title)} <span class="error-id" style="margin-left:6px">${esc(sc.name)}</span></div>
+        <div class="tl-meta">Resolved by ${esc(t?t.name:'Team')} · ${ageStr(e.hours)} ago</div>
+        ${e.desc?`<div class="tl-note">${esc(e.desc)}</div>`:''}
+      </div></div>`; }).join('')}</div>`;
+}
+
+/* ============================================================
+   REPORT ERROR
+   ============================================================ */
+function renderReport(){
+  const schools = visibleSchools();
+  return `
+  <div class="section-header"><div>
+    <div class="section-title">Report a Technical Error</div>
+    <div class="section-sub">Submit a new issue for tracking and resolution</div>
+  </div></div>
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:24px">
+    <div class="card">
+      <div class="form-grid">
+        <div class="form-group"><label>Reporting School *</label>
+          <select id="f-school"><option value="">— Select school —</option>
+            ${schools.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Reported By *</label><input id="f-reporter" type="text" placeholder="Full name"></div>
+        <div class="form-group"><label>Role</label><select id="f-role">
+          <option>Teacher</option><option>School IT Coordinator</option><option>Head Teacher</option><option>Quest Coordinator</option><option>Student</option></select></div>
+        <div class="form-group"><label>Contact / Phone</label><input id="f-contact" type="text" placeholder="+255 __ ___ ____"></div>
+        <div class="form-group"><label>Category *</label><select id="f-category" onchange="updateSubcategory()">
+          <option value="">— Select —</option>${Object.keys(SUBCATS).map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Sub-category</label><select id="f-subcat"><option value="">— Select category first —</option></select></div>
+        <div class="form-group"><label>Priority *</label><select id="f-priority">
+          <option value="critical">🔴 Critical — School cannot operate</option>
+          <option value="high">🟠 High — Major disruption</option>
+          <option value="medium" selected>🟡 Medium — Partial disruption</option>
+          <option value="low">🟢 Low — Minor issue</option></select></div>
+        <div class="form-group"><label>Affected Devices / Count</label><input id="f-affected" type="text" placeholder="e.g. 12 tablets, 1 projector"></div>
+        <div class="form-group full"><label>Error Title *</label><input id="f-title" type="text" placeholder="Brief description of the problem"></div>
+        <div class="form-group full"><label>Detailed Description *</label><textarea id="f-desc" placeholder="When did it start? What were students/teachers doing? Any error messages? What was already tried?"></textarea></div>
+        <div class="form-group"><label>Location</label><input id="f-location" type="text" placeholder="e.g. Computer Lab 1, Room 3B"></div>
+        <div class="form-group"><label>Date & Time</label><input id="f-datetime" type="datetime-local"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+        <button class="btn btn-primary" onclick="submitReport()"><i class="ti ti-send"></i> Submit Report</button>
+        <button class="btn btn-secondary" onclick="showPage('report')"><i class="ti ti-trash"></i> Clear</button>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card"><div class="card-title">SLA Targets</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--text2)">
+          <div style="display:flex;justify-content:space-between"><span><span class="dot dot-red" style="margin-right:6px"></span>Critical</span><b style="color:var(--red)">≤ 2 hours</b></div>
+          <div style="display:flex;justify-content:space-between"><span><span class="dot dot-amber" style="margin-right:6px"></span>High</span><b style="color:var(--amber)">≤ 8 hours</b></div>
+          <div style="display:flex;justify-content:space-between"><span><span class="dot dot-blue" style="margin-right:6px"></span>Medium</span><b>≤ 24 hours</b></div>
+          <div style="display:flex;justify-content:space-between"><span><span class="dot dot-green" style="margin-right:6px"></span>Low</span><b style="color:var(--green)">≤ 72 hours</b></div>
+        </div></div>
+      <div class="card"><div class="card-title">Support Hotline</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.9">
+          <div><i class="ti ti-phone" style="margin-right:6px;color:var(--accent)"></i><b style="color:var(--text)">+255 658 066 983</b></div>
+          <div><i class="ti ti-mail" style="margin-right:6px;color:var(--accent)"></i>support@opportunityeducation.or.tz</div>
+          <div><i class="ti ti-clock" style="margin-right:6px;color:var(--text3)"></i>Mon–Fri 7:30–17:00</div>
+        </div></div>
+    </div>
+  </div>`;
+}
+function initReportForm(){
+  const dt=$('f-datetime'); if(dt){ const n=new Date(); n.setMinutes(0); dt.value=n.toISOString().slice(0,16); }
+  if (activeRole==='school'){ const sel=$('f-school'); if(sel){ sel.value=activeSchoolScope; sel.disabled=true; } }
+}
+function updateSubcategory(){
+  const cat=$('f-category').value; const sel=$('f-subcat');
+  const opts=SUBCATS[cat]||[];
+  sel.innerHTML = opts.length ? opts.map(o=>`<option>${esc(o)}</option>`).join('') : '<option value="">— Select category first —</option>';
+}
+async function submitReport(){
+  const school=$('f-school').value, title=$('f-title').value.trim(), desc=$('f-desc').value.trim(), cat=$('f-category').value;
+  if(!school||!title||!desc||!cat){ showToast('Please fill in all required (*) fields'); return; }
+  const id='QFT-0'+(S.seq++);
+  const sc=schoolById(school);
+  const e={ id, title, school, cat, priority:$('f-priority').value, status:'open', hours:0, assigned: sc.admin||'', desc, created:new Date().toISOString(),
+            reporter:$('f-reporter').value, location:$('f-location').value };
+  S.errors.unshift(e);
+  await persist();
+  const t=teamById(sc.admin);
+  showToast(`${id} submitted · auto-assigned to ${t?t.name:'field team'}`);
+  showPage('tracker');
+}
+
+/* ============================================================
+   ERROR TRACKER
+   ============================================================ */
+function renderTracker(){
+  const errs = visibleErrors();
+  const counts = { all:errs.length, open:errs.filter(e=>e.status==='open').length, progress:errs.filter(e=>e.status==='progress').length, escalated:errs.filter(e=>e.status==='escalated').length, resolved:errs.filter(e=>e.status==='resolved').length };
+  const chips = [['all','All'],['open','Open'],['progress','In Progress'],['escalated','Escalated'],['resolved','Resolved']];
+  return `
+  <div class="section-header">
+    <div><div class="section-title">Error Tracker</div><div class="section-sub">All reported issues · ${esc(roleLabel())}</div></div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <input type="text" placeholder="Search errors…" style="width:190px" id="search-input" value="${esc(trackerSearch)}" oninput="trackerSearch=this.value;refreshTrackerTable()">
+      <button class="btn btn-primary btn-sm" onclick="showPage('report')"><i class="ti ti-plus"></i> New</button>
+    </div>
+  </div>
+  <div class="chip-group" style="margin-bottom:16px">
+    ${chips.map(([k,l])=>`<div class="chip ${trackerFilter===k?'active':''}" onclick="setTrackerFilter('${k}')">${l} (${counts[k]})</div>`).join('')}
+  </div>
+  <div class="card" style="padding:0"><div class="table-wrap"><table>
+    <thead><tr><th>ID</th><th>Error / School</th><th>Category</th><th>Priority</th><th>Status</th><th>Assigned</th><th>Age / SLA</th><th></th></tr></thead>
+    <tbody id="error-tbody"></tbody>
+  </table></div></div>`;
+}
+function setTrackerFilter(f){ trackerFilter=f; render(); }
+function refreshTrackerTable(){
+  const tbody=$('error-tbody'); if(!tbody) return;
+  const q=trackerSearch.toLowerCase();
+  let list = visibleErrors().filter(e=>{
+    const ms = trackerFilter==='all' || e.status===trackerFilter;
+    const sc=schoolById(e.school);
+    const mq = !q || e.title.toLowerCase().includes(q) || sc.name.toLowerCase().includes(q) || e.id.toLowerCase().includes(q);
+    return ms && mq;
+  });
+  if(!list.length){ tbody.innerHTML=`<tr><td colspan="8"><div class="empty"><i class="ti ti-search-off"></i>No matching errors</div></td></tr>`; return; }
+  tbody.innerHTML = list.map(e=>{ const sc=schoolById(e.school); const t=teamById(e.assigned); const breach=slaState(e)==='breach';
+    return `<tr style="cursor:pointer" onclick="openErrorModal('${e.id}')">
+      <td><span class="error-id">${e.id}</span></td>
+      <td><span style="font-weight:500;font-size:13px">${esc(e.title)}</span><br><span style="font-size:11px;color:var(--text3)">${esc(sc.name)}</span></td>
+      <td><span style="font-size:12px;color:var(--text2)"><i class="ti ${CAT_META[e.cat].ic}" style="color:${CAT_META[e.cat].color};font-size:13px;vertical-align:-2px;margin-right:4px"></i>${e.cat}</span></td>
+      <td><span class="badge ${PRI[e.priority].badge}">${PRI[e.priority].label}</span></td>
+      <td><span class="badge ${STAT[e.status].badge}">${STAT[e.status].label}</span></td>
+      <td style="font-size:12px;color:var(--text2)">${t?esc(t.name):'<span style="color:var(--text3)">Unassigned</span>'}</td>
+      <td style="font-size:12px;color:${breach?'var(--red)':'var(--text3)'}">${ageStr(e.hours)}${breach?' <i class="ti ti-alert-triangle" style="font-size:11px"></i>':''}</td>
+      <td onclick="event.stopPropagation()"><div style="display:flex;gap:4px">
+        <button class="btn btn-secondary btn-sm" style="padding:3px 8px" onclick="openUpdateModal('${e.id}')" title="Add update"><i class="ti ti-message" style="font-size:12px"></i></button>
+        ${e.status!=='resolved'?`<button class="btn btn-success btn-sm" style="padding:3px 8px" onclick="markResolved('${e.id}')" title="Mark resolved"><i class="ti ti-check" style="font-size:12px"></i></button>`:''}
+      </div></td></tr>`;
+  }).join('');
+}
+
+/* ============================================================
+   FOLLOW-UP CENTER
+   ============================================================ */
+function renderFollowup(){
+  const errs = visibleErrors().filter(e=>e.status!=='resolved');
+  const pending = errs.filter(e=>slaState(e)==='breach' || e.status==='escalated' || e.priority==='critical')
+    .sort((a,b)=>({critical:0,high:1,medium:2,low:3}[a.priority]-{critical:0,high:1,medium:2,low:3}[b.priority]));
+  const dueSchools = visibleSchools().filter(s=>!(S.checkins[s.id] && S.checkins[s.id][selectedWeek]));
+
+  return `
+  <div class="section-header">
+    <div><div class="section-title">Follow-Up Center</div><div class="section-sub">Open issues needing action + weekly school check-ins due</div></div>
+    <button class="btn btn-primary btn-sm" onclick="openUpdateModal('')"><i class="ti ti-message-plus"></i> Add Note</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start" class="detail-grid">
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">Issues Requiring Action (${pending.length})</div>
+        ${pending.length ? pending.map(e=>{ const sc=schoolById(e.school); const breach=slaState(e)==='breach';
+          const border = breach?'var(--red)':e.status==='escalated'?'var(--purple)':'var(--amber)';
+          const badge = breach?'<span class="badge badge-red"><span class="dot dot-red"></span>SLA Breach</span>':e.status==='escalated'?'<span class="badge badge-purple">Escalated</span>':'<span class="badge badge-amber">'+STAT[e.status].label+'</span>';
+          return `<div style="background:var(--bg3);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;border-left:3px solid ${border}">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap">
+              <div style="display:flex;align-items:center;gap:8px"><span class="error-id">${e.id}</span><span style="font-weight:500;font-size:13px">${esc(e.title)} — ${esc(sc.name)}</span></div>${badge}</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Age ${ageStr(e.hours)} · SLA target ${SLA[e.priority]}h · assigned to ${esc(teamById(e.assigned)?.name||'unassigned')}.</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-secondary btn-sm" onclick="openUpdateModal('${e.id}')"><i class="ti ti-message"></i> Update</button>
+              ${e.status!=='escalated'?`<button class="btn btn-danger btn-sm" onclick="escalate('${e.id}')"><i class="ti ti-arrow-up"></i> Escalate</button>`:''}
+              <button class="btn btn-success btn-sm" onclick="markResolved('${e.id}')"><i class="ti ti-check"></i> Resolve</button>
+            </div></div>`; }).join('') : `<div class="empty"><i class="ti ti-circle-check"></i>Nothing overdue — all issues within SLA</div>`}
+      </div>
+
+      <div class="card">
+        <div class="card-title">Weekly Check-Ins Due — Week ${selectedWeek} (${dueSchools.length})</div>
+        ${dueSchools.length ? `<div style="display:flex;flex-direction:column;gap:8px">${dueSchools.map(s=>{
+          const t=teamById(s.admin);
+          return `<div style="display:flex;align-items:center;gap:12px;background:var(--bg3);border-radius:8px;padding:10px 12px">
+            <div class="av" style="background:rgba(245,166,35,0.15);color:var(--amber);width:30px;height:30px;font-size:11px">${initials(s.name)}</div>
+            <div style="flex:1"><div style="font-size:13px;font-weight:500">${esc(s.name)}</div><div style="font-size:11px;color:var(--text3)">${esc(s.zone)} · sub-admin ${esc(t?t.name:'—')}</div></div>
+            <button class="btn btn-primary btn-sm" onclick="openCheckinModal('${s.id}',${selectedWeek})"><i class="ti ti-clipboard-check"></i> Check-In</button>
+          </div>`; }).join('')}</div>`
+          : `<div class="empty"><i class="ti ti-calendar-check"></i>All schools checked in for week ${selectedWeek}</div>`}
+        <button class="btn btn-secondary btn-sm" style="margin-top:12px;width:100%" onclick="showPage('weekly')"><i class="ti ti-calendar-week"></i> Open Weekly Check-In Board</button>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card"><div class="card-title">Field Team / Sub-Admins</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          ${S.team.map(t=>{ const load=S.errors.filter(e=>e.assigned===t.id&&e.status!=='resolved').length;
+            const st={active:['badge-green','Active'],onsite:['badge-amber','On Site'],remote:['badge-gray','Remote']}[t.status];
+            return `<div style="display:flex;align-items:center;gap:10px">
+              <div class="av" style="background:${t.color}22;color:${t.color}">${initials(t.name)}</div>
+              <div style="flex:1"><div style="font-size:13px;font-weight:500">${esc(t.name)}</div><div style="font-size:11px;color:var(--text3)">${esc(t.zone)} · ${load} open</div></div>
+              <span class="badge ${st[0]}">${st[1]}</span></div>`; }).join('')}
+        </div></div>
+      <div class="card"><div class="card-title">School Communication Log</div>
+        ${S.comms.length?`<div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--text2)">
+          ${S.comms.slice(0,6).map(c=>{ const sc=schoolById(c.school);
+            return `<div style="background:var(--bg3);border-radius:6px;padding:10px 12px">
+              <div style="font-weight:500;color:var(--text);margin-bottom:3px">${esc(sc?sc.name:c.school)} · ${relTime(c.when)}</div>
+              <div>${esc(c.text)} <span style="color:var(--text3)">— ${esc(c.by)}</span></div></div>`; }).join('')}
+        </div>`:`<div class="empty" style="padding:20px 0"><i class="ti ti-messages"></i>No notes yet</div>`}
+        <button class="btn btn-secondary btn-sm" style="margin-top:12px;width:100%" onclick="openUpdateModal('')"><i class="ti ti-message-plus"></i> Add Communication Note</button>
+      </div>
+    </div>
+  </div>`;
+}
+async function escalate(id){ const e=S.errors.find(x=>x.id===id); if(e){ e.status='escalated'; await persist(); render(); showToast(id+' escalated to platform/vendor team'); } }
+
+/* ============================================================
+   WEEKLY CHECK-INS  (per school, per week of term)
+   ============================================================ */
+function checkinState(schoolId, w){
+  const c = S.checkins[schoolId] && S.checkins[schoolId][w];
+  if (c) return c.status==='red'?'overdue':c.status==='amber'?'due':'done'; // done/due/overdue maps to colour
+  if (w < selectedWeek) return 'overdue';   // past, not done
+  if (w === selectedWeek) return 'due';      // current week pending
+  return 'future';
+}
+function renderWeekly(){
+  const schools = visibleSchools();
+  const weeks = Array.from({length:TERM.weeks},(_,i)=>i+1);
+  const totalDue = schools.filter(s=>!(S.checkins[s.id]&&S.checkins[s.id][selectedWeek])).length;
+  const doneThis = schools.length - totalDue;
+  const pct = Math.round(doneThis/Math.max(1,schools.length)*100);
+
+  return `
+  <div class="section-header">
+    <div><div class="section-title">Weekly Check-Ins</div><div class="section-sub">${TERM.label} · structured weekly support visit per school</div></div>
+    <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text2)">
+      <span>Viewing week</span>
+      <select style="width:auto" onchange="selectedWeek=+this.value;render()">
+        ${weeks.map(w=>`<option value="${w}" ${w===selectedWeek?'selected':''}>Week ${w}${w===currentWeek()?' (current)':''}</option>`).join('')}
+      </select>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card g"><div class="stat-label">Week ${selectedWeek} Completed</div><div class="stat-val" style="color:var(--green)">${doneThis}<span style="font-size:16px;color:var(--text3)">/${schools.length}</span></div><div class="stat-sub">${pct}% of schools</div></div>
+    <div class="stat-card a"><div class="stat-label">Still Due</div><div class="stat-val" style="color:var(--amber)">${totalDue}</div><div class="stat-sub">check-ins outstanding</div></div>
+    <div class="stat-card"><div class="stat-label">Term Progress</div><div class="stat-val">${selectedWeek}<span style="font-size:16px;color:var(--text3)">/${TERM.weeks}</span></div><div class="stat-sub">weeks elapsed</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title">Term Completion Grid <span style="font-size:11px;color:var(--text3);text-transform:none;letter-spacing:0">tap a cell to record / view</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>School</th><th>Sub-Admin</th>${weeks.map(w=>`<th style="text-align:center">W${w}</th>`).join('')}</tr></thead>
+      <tbody>${schools.map(s=>{ const t=teamById(s.admin);
+        return `<tr>
+          <td><span style="font-weight:500;cursor:pointer" onclick="openSchool('${s.id}')">${esc(s.name)}</span></td>
+          <td style="font-size:12px;color:var(--text2)">${esc(t?t.name:'—')}</td>
+          ${weeks.map(w=>{ const st=checkinState(s.id,w);
+            const map={done:['var(--green)','ti-check','rgba(45,217,138,0.15)'],due:['var(--amber)','ti-clock','rgba(245,166,35,0.12)'],overdue:['var(--red)','ti-alert-triangle','rgba(255,82,99,0.12)'],future:['var(--text3)','ti-minus','transparent']};
+              const [col,ic,bg]=map[st];
+              return `<td style="text-align:center"><span title="Week ${w}: ${st}" onclick="openCheckinModal('${s.id}',${w})" style="display:inline-flex;width:26px;height:26px;border-radius:7px;align-items:center;justify-content:center;background:${bg};color:${col};cursor:pointer;border:1px solid ${st==='future'?'var(--border)':'transparent'}"><i class="ti ${ic}" style="font-size:13px"></i></span></td>`; }).join('')}
+        </tr>`; }).join('')}</tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Week ${selectedWeek} — School Status</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
+      ${schools.map(s=>{ const c=S.checkins[s.id]&&S.checkins[s.id][selectedWeek]; const t=teamById(s.admin);
+        if(c){ const sc={green:['var(--green)','Healthy','badge-green'],amber:['var(--amber)','Minor issues','badge-amber'],red:['var(--red)','Problems','badge-red']}[c.status];
+          return `<div class="card" style="background:var(--bg3);padding:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div style="font-weight:500;font-size:13px">${esc(s.name)}</div><span class="badge ${sc[2]}">${sc[1]}</span></div>
+            <div style="font-size:11px;color:var(--text3);margin-bottom:8px">By ${esc(c.by)} · ${relTime(c.when)}</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.5">${esc(c.note||'No note')}</div>
+            <button class="btn btn-secondary btn-sm" style="margin-top:10px;width:100%" onclick="openCheckinModal('${s.id}',${selectedWeek})"><i class="ti ti-edit"></i> Edit</button>
+          </div>`;
+        }
+        return `<div class="card" style="background:var(--bg3);padding:14px;border-style:dashed;border-color:var(--border2)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <div style="font-weight:500;font-size:13px">${esc(s.name)}</div><span class="badge badge-amber">Due</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Assigned: ${esc(t?t.name:'—')}</div>
+          <div style="font-size:12px;color:var(--text3)">No check-in recorded for week ${selectedWeek}.</div>
+          <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="openCheckinModal('${s.id}',${selectedWeek})"><i class="ti ti-clipboard-check"></i> Record Check-In</button>
+        </div>`; }).join('')}
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   SCHOOL PROFILES (list + detail)
+   ============================================================ */
+function renderSchools(){
+  if (selectedSchoolId) return renderSchoolDetail(selectedSchoolId);
+  const schools = visibleSchools();
+  return `
+  <div class="section-header"><div><div class="section-title">School Profiles</div><div class="section-sub">${schools.length} schools · individual profile, assigned sub-admin & weekly history</div></div></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px">
+    ${schools.map(s=>{ const c=schoolColor(s.id); const t=teamById(s.admin); const oc=openErrorsForSchool(s.id).length;
+      const done=Object.keys(S.checkins[s.id]||{}).filter(w=>+w<=selectedWeek).length;
+      return `<div class="school-card" style="align-items:flex-start;flex-direction:column;gap:12px" onclick="openSchool('${s.id}')">
+        <div style="display:flex;align-items:center;gap:12px;width:100%">
+          <div class="school-avatar" style="background:${c.bg};color:${c.tc}">${initials(s.name)}</div>
+          <div style="flex:1;min-width:0"><div class="school-name">${esc(s.name)}</div><div class="school-meta">${esc(s.zone)} · ${s.students} students</div></div>
+          <span class="badge ${c.badge}">${c.label}</span>
+        </div>
+        <div style="display:flex;gap:14px;font-size:11px;color:var(--text3);width:100%;border-top:1px solid var(--border);padding-top:10px">
+          <span><i class="ti ti-device-tablet" style="vertical-align:-2px"></i> ${s.tablets}</span>
+          <span><i class="ti ti-bug" style="vertical-align:-2px;color:${oc?'var(--amber)':'inherit'}"></i> ${oc} open</span>
+          <span><i class="ti ti-calendar-check" style="vertical-align:-2px"></i> ${done}/${selectedWeek} wk</span>
+          <span style="margin-left:auto"><i class="ti ti-user-shield" style="vertical-align:-2px"></i> ${esc(t?t.name:'—')}</span>
+        </div>
+      </div>`; }).join('')}
+  </div>`;
+}
+function openSchool(id){ selectedSchoolId=id; showPage('schools'); }
+function backToSchools(){ selectedSchoolId=null; render(); }
+
+function renderSchoolDetail(id){
+  const s=schoolById(id); const c=schoolColor(id); const t=teamById(s.admin);
+  const errs=errorsForSchool(id); const open=errs.filter(e=>e.status!=='resolved');
+  const weeks=Array.from({length:TERM.weeks},(_,i)=>i+1);
+  const ci=S.checkins[id]||{};
+  const comms=S.comms.filter(x=>x.school===id);
+  return `
+  <div class="section-header">
+    <div style="display:flex;align-items:center;gap:8px"><button class="btn btn-secondary btn-sm" onclick="backToSchools()"><i class="ti ti-arrow-left"></i> Schools</button></div>
+    ${activeRole==='admin'?`<button class="btn btn-secondary btn-sm" onclick="openAssignModal('${id}')"><i class="ti ti-user-cog"></i> Reassign Sub-Admin</button>`:''}
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="detail-hero">
+      <div class="school-avatar" style="background:${c.bg};color:${c.tc}">${initials(s.name)}</div>
+      <div style="flex:1">
+        <div style="font-size:20px;font-weight:600;letter-spacing:-0.4px">${esc(s.name)}</div>
+        <div style="font-size:13px;color:var(--text3)">${esc(s.zone)} Zone · ${s.students} students · ${s.tablets} tablets · ${s.routers} router(s)</div>
+      </div>
+      <span class="badge ${c.badge}" style="font-size:12px;padding:5px 12px">${c.label}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;border-top:1px solid var(--border);padding-top:16px">
+      <div><div style="font-size:11px;color:var(--text3);margin-bottom:4px">ASSIGNED SUB-ADMIN</div>
+        <div style="display:flex;align-items:center;gap:8px"><div class="av" style="width:28px;height:28px;font-size:11px;background:${t?t.color+'22':'var(--bg4)'};color:${t?t.color:'var(--text2)'}">${t?initials(t.name):'?'}</div><div><div style="font-size:13px;font-weight:500">${esc(t?t.name:'Unassigned')}</div><div style="font-size:11px;color:var(--text3)">${esc(t?t.role:'')}</div></div></div></div>
+      <div><div style="font-size:11px;color:var(--text3);margin-bottom:4px">SCHOOL CONTACT</div><div style="font-size:13px;font-weight:500">${esc(s.contact)}</div><div style="font-size:11px;color:var(--text3)">${esc(s.contactRole)} · ${esc(s.phone)}</div></div>
+      <div><div style="font-size:11px;color:var(--text3);margin-bottom:4px">CONNECTIVITY</div><div style="font-size:13px;font-weight:500">${esc(s.isp)}</div><div style="font-size:11px;color:var(--text3)">LRS ${esc(s.lrs)}</div></div>
+      <div><div style="font-size:11px;color:var(--text3);margin-bottom:4px">OPEN ISSUES</div><div style="font-size:13px;font-weight:500;color:${open.length?'var(--amber)':'var(--green)'}">${open.length} active</div><div style="font-size:11px;color:var(--text3)">${errs.length} all-time</div></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title">Weekly Check-In History — ${TERM.label}</div>
+    <div class="week-track">
+      ${weeks.map(w=>{ const cc=ci[w]; const st=checkinState(id,w);
+        const map={done:'done',due:'due',overdue:'overdue',future:''};
+        const ic={done:'ti-check',due:'ti-clock',overdue:'ti-alert-triangle',future:'ti-minus'}[st];
+        return `<div class="week-pill ${map[st]}" onclick="openCheckinModal('${id}',${w})" title="Week ${w}">
+          <span class="wk-num">W${w}</span><i class="ti ${ic} wk-ic"></i></div>`; }).join('')}
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:var(--text2)">
+      ${(()=>{ const last=Object.keys(ci).map(Number).sort((a,b)=>b-a)[0]; const c2=last?ci[last]:null;
+        return c2?`Latest: Week ${last} — <b style="color:var(--text)">${esc(c2.note||'recorded')}</b> <span style="color:var(--text3)">by ${esc(c2.by)}, ${relTime(c2.when)}</span>`:'No check-ins recorded yet.'; })()}
+    </div>
+  </div>
+
+  <div class="two-col" style="align-items:start">
+    <div class="card">
+      <div class="card-title">Issue History (${errs.length})</div>
+      ${errs.length?`<div class="table-wrap"><table><thead><tr><th>ID</th><th>Issue</th><th>Priority</th><th>Status</th><th>Age</th></tr></thead>
+        <tbody>${errs.map(e=>`<tr style="cursor:pointer" onclick="openErrorModal('${e.id}')">
+          <td><span class="error-id">${e.id}</span></td>
+          <td style="font-size:12px">${esc(e.title)}</td>
+          <td><span class="badge ${PRI[e.priority].badge}">${PRI[e.priority].label}</span></td>
+          <td><span class="badge ${STAT[e.status].badge}">${STAT[e.status].label}</span></td>
+          <td style="font-size:12px;color:var(--text3)">${ageStr(e.hours)}</td></tr>`).join('')}</tbody></table></div>`
+        :`<div class="empty"><i class="ti ti-circle-check"></i>No issues reported</div>`}
+    </div>
+    <div class="card">
+      <div class="card-title">Communication Log</div>
+      ${comms.length?`<div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--text2)">
+        ${comms.map(c2=>`<div style="background:var(--bg3);border-radius:6px;padding:10px 12px"><div style="font-weight:500;color:var(--text);margin-bottom:3px">${esc(c2.by)} · ${relTime(c2.when)}</div><div>${esc(c2.text)}</div></div>`).join('')}
+      </div>`:`<div class="empty" style="padding:20px 0"><i class="ti ti-messages"></i>No notes for this school</div>`}
+      <button class="btn btn-secondary btn-sm" style="margin-top:12px;width:100%" onclick="openUpdateModal('','${id}')"><i class="ti ti-message-plus"></i> Add Note</button>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   TROUBLESHOOTING
+   ============================================================ */
+let tsSelected = null;
+function renderTroubleshoot(){
+  const isAdmin = activeRole==='admin';
+  return `
+  <div class="section-header">
+    <div><div class="section-title">Troubleshooting Guides</div><div class="section-sub">Step-by-step resolution for common QFT school issues${isAdmin?' · managed by System Admin':''}</div></div>
+    ${isAdmin?`<div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-secondary" onclick="openGuideModal()"><i class="ti ti-list-numbers"></i> Add Guide</button>
+      <button class="btn btn-primary" onclick="triggerManualUpload()"><i class="ti ti-upload"></i> Upload Manual</button>
+      <input type="file" id="manual-file" style="display:none" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.html,.png,.jpg,.jpeg" onchange="handleManualUpload(this)">
+    </div>`:''}
+  </div>
+  <div class="two-col" style="align-items:start">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      ${S.guides.map((g,i)=>`<div class="card" style="cursor:pointer;${tsSelected===i?'border-color:var(--accent)':''}" onclick="tsSelected=${i};render()">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:38px;height:38px;background:rgba(79,124,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ${g.icon}" style="color:var(--accent);font-size:18px"></i></div>
+          <div><div style="font-weight:500;font-size:13px">${esc(g.title)}</div><div style="font-size:11px;color:var(--text3)">${esc(g.cat)} · ${g.steps.length} steps${g.custom?' · added by admin':''}</div></div>
+          <i class="ti ti-chevron-right" style="margin-left:auto;color:var(--text3);font-size:16px"></i>
+        </div></div>`).join('')}
+    </div>
+    <div class="card">${tsSelected==null||!S.guides[tsSelected]?`<div class="empty"><i class="ti ti-tools"></i>Select a guide to view steps</div>`:(()=>{ const g=S.guides[tsSelected];
+      return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+        <div style="width:44px;height:44px;background:rgba(79,124,255,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center"><i class="ti ${g.icon}" style="color:var(--accent);font-size:20px"></i></div>
+        <div style="flex:1"><div style="font-weight:600;font-size:15px">${esc(g.title)}</div><div style="font-size:12px;color:var(--text3)">${esc(g.cat)} · ${g.steps.length} steps</div></div>
+        ${isAdmin?`<button class="btn btn-secondary btn-sm" onclick="openGuideModal(${tsSelected})"><i class="ti ti-pencil"></i> Edit</button>
+        <button class="btn btn-secondary btn-sm" style="color:var(--red)" title="Delete guide" onclick="confirmDeleteGuide(${tsSelected})"><i class="ti ti-trash"></i></button>`:''}</div>
+      <div style="display:flex;flex-direction:column;gap:10px">${g.steps.map((st,i)=>`<div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="width:24px;height:24px;border-radius:50%;background:rgba(79,124,255,0.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;margin-top:1px">${i+1}</div>
+        <div style="font-size:13px;line-height:1.6;color:var(--text2)">${esc(st)}</div></div>`).join('')}</div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+        <button class="btn btn-primary btn-sm" onclick="showPage('report')"><i class="ti ti-bug"></i> Still broken? Report it</button></div>`; })()}</div>
+  </div>
+
+  <div class="section-header" style="margin-top:28px">
+    <div><div class="section-title" style="font-size:16px">User Guides & Manuals Library</div><div class="section-sub">Reference documents uploaded by the System Admin — open or download for offline use</div></div>
+  </div>
+  ${S.manuals.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+    ${S.manuals.map(m=>{ const mi=manualIcon(m.type,m.name);
+      return `<div class="card" style="display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;background:${mi.bg};border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ${mi.icon}" style="color:${mi.color};font-size:19px"></i></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:500;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(m.name)}">${esc(m.title||m.name)}</div>
+          <div style="font-size:11px;color:var(--text3)">${esc(m.cat||'General')} · ${fmtSize(m.size)} · ${esc(m.by||'Admin')}</div>
+        </div>
+        <button class="btn btn-secondary btn-sm" title="Open / download" onclick="downloadManual('${m.id}')"><i class="ti ti-download"></i></button>
+        ${isAdmin?`<button class="btn btn-secondary btn-sm" style="color:var(--red)" title="Delete" onclick="confirmDeleteManual('${m.id}')"><i class="ti ti-trash"></i></button>`:''}
+      </div>`; }).join('')}
+  </div>`:`<div class="card"><div class="empty"><i class="ti ti-files"></i>No manuals uploaded yet${isAdmin?' — use “Upload Manual” above to add PDF or Word user guides':''}</div></div>`}`;
+}
+
+/* --- Manual (file) library helpers --- */
+function manualIcon(type, name){
+  const n=(name||'').toLowerCase();
+  if (type==='application/pdf'||n.endsWith('.pdf')) return {icon:'ti-file-type-pdf', color:'var(--red)',   bg:'rgba(255,82,99,0.12)'};
+  if (n.endsWith('.doc')||n.endsWith('.docx'))      return {icon:'ti-file-type-doc', color:'var(--accent)',bg:'rgba(79,124,255,0.12)'};
+  if (n.endsWith('.ppt')||n.endsWith('.pptx'))      return {icon:'ti-presentation',  color:'var(--amber)', bg:'rgba(255,176,32,0.12)'};
+  if (n.endsWith('.xls')||n.endsWith('.xlsx'))      return {icon:'ti-table',         color:'var(--green)', bg:'rgba(61,220,151,0.12)'};
+  if ((type||'').startsWith('image/'))              return {icon:'ti-photo',         color:'var(--purple)',bg:'rgba(167,139,250,0.12)'};
+  if (n.endsWith('.html'))                          return {icon:'ti-world',         color:'var(--teal)',  bg:'rgba(45,212,191,0.12)'};
+  return {icon:'ti-file-text', color:'var(--text2)', bg:'var(--bg3)'};
+}
+function fmtSize(b){ if(b==null) return '—'; if(b<1024) return b+' B'; if(b<1048576) return (b/1024).toFixed(0)+' KB'; return (b/1048576).toFixed(1)+' MB'; }
+
+const MANUAL_MAX_BYTES = 2.5*1024*1024; // keep within storage value limits after base64 inflation
+function triggerManualUpload(){
+  if (activeRole!=='admin'){ showToast('Only the System Admin can upload manuals'); return; }
+  $('manual-file').click();
+}
+function handleManualUpload(input){
+  const f=input.files && input.files[0]; input.value=''; if(!f) return;
+  if (f.size > MANUAL_MAX_BYTES){ showToast('File too large — maximum '+fmtSize(MANUAL_MAX_BYTES)+'. Compress the PDF or split it.'); return; }
+  const reader=new FileReader();
+  reader.onload=()=>{
+    pendingManual={ name:f.name, type:f.type||'application/octet-stream', size:f.size, data:reader.result };
+    openModal('Upload Manual — Details',
+      `<div style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text2)">
+          <i class="ti ti-paperclip" style="color:var(--accent)"></i> ${esc(f.name)} · ${fmtSize(f.size)}</div>
+        <div class="form-group"><label>Display Title *</label><input id="mn-title" type="text" value="${esc(f.name.replace(/\.[^.]+$/,''))}"></div>
+        <div class="form-group"><label>Category</label><select id="mn-cat">
+          ${['General','Connectivity','Hardware','Platform','Power','Accounts','LRS / Router','Tablet Setup'].map(c=>`<option>${c}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Uploaded By</label><input id="mn-by" type="text" value="System Admin"></div>
+      </div>`,
+      `<button class="btn btn-secondary" onclick="pendingManual=null;closeModal()">Cancel</button>
+       <button class="btn btn-primary" onclick="saveManual()"><i class="ti ti-upload"></i> Save to Library</button>`);
+  };
+  reader.onerror=()=>showToast('Could not read the file — please try again');
+  reader.readAsDataURL(f);
+}
+let pendingManual=null;
+async function saveManual(){
+  if(!pendingManual) return;
+  const title=$('mn-title').value.trim(); if(!title){ showToast('Please enter a display title'); return; }
+  S.manuals.unshift({ id:'mn'+Date.now(), title, cat:$('mn-cat').value, by:$('mn-by').value.trim()||'System Admin',
+    when:new Date().toISOString(), name:pendingManual.name, type:pendingManual.type, size:pendingManual.size, data:pendingManual.data });
+  pendingManual=null;
+  await persist(); closeModal(); render();
+  showToast('Manual uploaded to the library — visible to all roles');
+}
+function downloadManual(id){
+  const m=S.manuals.find(x=>x.id===id); if(!m) return;
+  const a=document.createElement('a'); a.href=m.data; a.download=m.name; document.body.appendChild(a); a.click(); a.remove();
+  showToast('Downloading '+m.name);
+}
+function confirmDeleteManual(id){
+  const m=S.manuals.find(x=>x.id===id); if(!m) return;
+  openModal('Delete Manual',
+    `<div style="font-size:13px;color:var(--text2);line-height:1.6">Remove <b style="color:var(--text)">${esc(m.title||m.name)}</b> from the library? Schools and sub-admins will no longer see it.</div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-danger" onclick="deleteManual('${id}')"><i class="ti ti-trash"></i> Delete</button>`);
+}
+async function deleteManual(id){
+  S.manuals=S.manuals.filter(x=>x.id!==id);
+  await persist(); closeModal(); render(); showToast('Manual deleted');
+}
+
+/* --- Add / edit step-by-step guide (System Admin only) --- */
+const GUIDE_ICONS=[['ti-tools','Tools'],['ti-wifi-off','WiFi'],['ti-router','Router'],['ti-device-tablet','Tablet'],['ti-device-laptop','Laptop'],['ti-apps','Platform'],['ti-bolt','Power'],['ti-video','Projector'],['ti-printer','Printer'],['ti-user-x','Accounts'],['ti-book','Manual'],['ti-settings','Settings']];
+function openGuideModal(idx){
+  if (activeRole!=='admin'){ showToast('Only the System Admin can manage guides'); return; }
+  const g = (idx!=null) ? S.guides[idx] : null;
+  const body=`
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="form-group"><label>Guide Title *</label><input id="g-title" type="text" placeholder="e.g. LRS Not Reachable" value="${g?esc(g.title):''}"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label>Category</label><select id="g-cat">
+          ${Object.keys(SUBCATS).map(c=>`<option ${g&&g.cat===c?'selected':''}>${c}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Icon</label><select id="g-icon">
+          ${GUIDE_ICONS.map(([ic,lb])=>`<option value="${ic}" ${g&&g.icon===ic?'selected':''}>${lb}</option>`).join('')}</select></div>
+      </div>
+      <div class="form-group"><label>Steps * — write one step per line, in order</label>
+        <textarea id="g-steps" style="min-height:180px" placeholder="Check the router power light is ON.&#10;Restart the router: unplug for 30 seconds…">${g?esc(g.steps.join('\n')):''}</textarea></div>
+      <div style="font-size:11px;color:var(--text3)"><i class="ti ti-info-circle"></i> The guide will appear for all roles (sub-admins and schools) immediately after saving.</div>
+    </div>`;
+  openModal(g?`Edit Guide — ${g.title}`:'Add Troubleshooting Guide', body,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-primary" onclick="saveGuide(${idx!=null?idx:-1})"><i class="ti ti-check"></i> ${g?'Save Changes':'Add Guide'}</button>`, true);
+}
+async function saveGuide(idx){
+  const title=$('g-title').value.trim();
+  const steps=$('g-steps').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!title){ showToast('Please enter a guide title'); return; }
+  if(!steps.length){ showToast('Please enter at least one step'); return; }
+  if(idx>=0 && S.guides[idx]){
+    Object.assign(S.guides[idx], { title, cat:$('g-cat').value, icon:$('g-icon').value, steps });
+    tsSelected=idx;
+  } else {
+    S.guides.push({ icon:$('g-icon').value, title, cat:$('g-cat').value, steps, custom:true });
+    tsSelected=S.guides.length-1;
+  }
+  await persist(); closeModal(); render();
+  showToast(`Guide "${title}" ${idx>=0?'updated':'added'} — ${steps.length} steps`);
+}
+function confirmDeleteGuide(idx){
+  const g=S.guides[idx]; if(!g) return;
+  openModal('Delete Guide',
+    `<div style="font-size:13px;color:var(--text2);line-height:1.6">Delete the guide <b style="color:var(--text)">${esc(g.title)}</b>? This removes it for all sub-admins and schools.</div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-danger" onclick="deleteGuide(${idx})"><i class="ti ti-trash"></i> Delete</button>`);
+}
+async function deleteGuide(idx){
+  const g=S.guides[idx]; if(!g) return;
+  S.guides.splice(idx,1); if(tsSelected===idx) tsSelected=null; else if(tsSelected>idx) tsSelected--;
+  await persist(); closeModal(); render(); showToast(`Guide "${g.title}" deleted`);
+}
+
+/* ============================================================
+   ANALYTICS (admin)
+   ============================================================ */
+function renderAnalytics(){
+  const errs=visibleErrors();
+  const resolved=errs.filter(e=>e.status==='resolved');
+  const total=errs.length;
+  const bySchool={}; errs.forEach(e=>bySchool[e.school]=(bySchool[e.school]||0)+1);
+  const ranked=Object.keys(bySchool).map(id=>({id,n:bySchool[id]})).sort((a,b)=>b.n-a.n);
+  const maxN=Math.max(1,...ranked.map(r=>r.n));
+  const byCat={}; errs.forEach(e=>byCat[e.cat]=(byCat[e.cat]||0)+1);
+  const slaMet = resolved.length ? Math.round(resolved.filter(e=>slaState(e)==='met').length/resolved.length*100) : 0;
+  const checkinTotal = visibleSchools().length*selectedWeek;
+  let checkinDone=0; visibleSchools().forEach(s=>{ Object.keys(S.checkins[s.id]||{}).forEach(w=>{ if(+w<=selectedWeek) checkinDone++; }); });
+  const checkinRate=Math.round(checkinDone/Math.max(1,checkinTotal)*100);
+
+  return `
+  <div class="section-header"><div><div class="section-title">Analytics</div><div class="section-sub">${TERM.label} — performance metrics</div></div></div>
+  <div class="three-col" style="margin-bottom:20px">
+    <div class="stat-card"><div class="stat-label">Total Errors Logged</div><div class="stat-val" style="color:var(--accent)">${total}</div><div class="stat-sub">${resolved.length} resolved</div></div>
+    <div class="stat-card g"><div class="stat-label">SLA Compliance</div><div class="stat-val" style="color:var(--green)">${slaMet}<span style="font-size:18px">%</span></div><div class="stat-sub">resolved within target</div></div>
+    <div class="stat-card t"><div class="stat-label">Weekly Check-In Rate</div><div class="stat-val" style="color:var(--teal)">${checkinRate}<span style="font-size:18px">%</span></div><div class="stat-sub">${checkinDone}/${checkinTotal} expected</div></div>
+  </div>
+  <div class="two-col" style="align-items:start">
+    <div class="card"><div class="card-title">Errors by School</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
+        ${ranked.map(r=>{ const sc=schoolById(r.id); const pct=Math.round(r.n/maxN*100); const col=r.n>=8?'var(--red)':r.n>=5?'var(--amber)':'var(--accent)';
+          return `<div style="display:flex;align-items:center;gap:10px"><span style="width:120px;color:var(--text2);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(sc.name)}</span><div class="progress" style="flex:1"><div class="progress-fill" style="width:${pct}%;background:${col}"></div></div><span style="color:var(--text2);width:24px;text-align:right">${r.n}</span></div>`; }).join('')}
+      </div></div>
+    <div class="card"><div class="card-title">Error Type Distribution</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:12px">
+        ${Object.keys(CAT_META).filter(c=>byCat[c]).sort((a,b)=>byCat[b]-byCat[a]).map(c=>{ const n=byCat[c]; const pct=Math.round(n/Math.max(1,total)*100); const m=CAT_META[c];
+          return `<div style="display:flex;justify-content:space-between;align-items:center"><span><i class="ti ${m.ic}" style="color:${m.color};margin-right:6px;font-size:13px"></i>${c}</span><div style="display:flex;align-items:center;gap:8px"><div class="progress" style="width:120px"><div class="progress-fill" style="width:${pct}%;background:${m.color}"></div></div><span style="color:var(--text2);width:54px;text-align:right">${n} (${pct}%)</span></div></div>`; }).join('')}
+      </div></div>
+  </div>`;
+}
+
+/* ============================================================
+   SUB-ADMINS (admin)
+   ============================================================ */
+function renderTeam(){
+  return `
+  <div class="section-header">
+    <div><div class="section-title">Sub-Admins</div><div class="section-sub">Field engineers & their assigned schools / workload · managed by System Admin</div></div>
+    <button class="btn btn-primary" onclick="openSubadminModal()"><i class="ti ti-user-plus"></i> Add Sub-Admin</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px">
+    ${S.team.map(t=>{ const mySchools=S.schools.filter(s=>s.admin===t.id); const myOpen=S.errors.filter(e=>e.assigned===t.id&&e.status!=='resolved').length;
+      const st={active:['badge-green','Active'],onsite:['badge-amber','On Site'],remote:['badge-gray','Remote']}[t.status]||['badge-gray','—'];
+      return `<div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div class="av" style="width:44px;height:44px;font-size:15px;background:${t.color}22;color:${t.color}">${initials(t.name)}</div>
+          <div style="flex:1"><div style="font-weight:600;font-size:15px">${esc(t.name)}</div><div style="font-size:12px;color:var(--text3)">${esc(t.role)}</div></div>
+          <span class="badge ${st[0]}">${st[1]}</span></div>
+        <div style="display:flex;gap:10px;margin-bottom:14px">
+          <div style="flex:1;background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600">${mySchools.length}</div><div style="font-size:10px;color:var(--text3)">SCHOOLS</div></div>
+          <div style="flex:1;background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:${myOpen?'var(--amber)':'var(--green)'}">${myOpen}</div><div style="font-size:10px;color:var(--text3)">OPEN ISSUES</div></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px">ASSIGNED SCHOOLS</div>
+        <div class="chip-group">${mySchools.length?mySchools.map(s=>`<span class="chip" onclick="openSchool('${s.id}')">${esc(s.name)}</span>`).join(''):'<span style="font-size:12px;color:var(--text3)">None assigned</span>'}</div>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--text2);line-height:1.9">
+          <div><i class="ti ti-mail" style="margin-right:6px;color:var(--accent)"></i>${esc(t.email)}</div>
+          <div><i class="ti ti-phone" style="margin-right:6px;color:var(--accent)"></i>${esc(t.phone)}</div>
+          <div><i class="ti ti-map-pin" style="margin-right:6px;color:var(--text3)"></i>${esc(t.zone)}</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-secondary btn-sm" style="flex:1" onclick="viewAsSubadmin('${t.id}')"><i class="ti ti-eye"></i> View as</button>
+          <button class="btn btn-secondary btn-sm" style="flex:1" onclick="openSubadminModal('${t.id}')"><i class="ti ti-pencil"></i> Edit</button>
+          <button class="btn btn-secondary btn-sm" style="color:var(--red)" title="Remove sub-admin" onclick="confirmRemoveSubadmin('${t.id}')"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>`; }).join('')}
+  </div>`;
+}
+function viewAsSubadmin(id){ activeRole='subadmin'; activeSubadmin=id; $('role-select').value='subadmin::'+id; showPage('dashboard'); showToast('Now viewing as '+teamById(id).name); }
+
+/* --- Add / edit sub-admin (System Admin only) --- */
+function openSubadminModal(id){
+  if (activeRole!=='admin'){ showToast('Only the System Admin can manage sub-admins'); return; }
+  const t = id ? teamById(id) : null;
+  const mine = new Set(t ? S.schools.filter(s=>s.admin===t.id).map(s=>s.id) : []);
+  const body=`
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label>Full Name *</label><input id="sa-name" type="text" placeholder="e.g. A. Mushi" value="${t?esc(t.name):''}"></div>
+        <div class="form-group"><label>Role / Title</label><input id="sa-role" type="text" placeholder="e.g. Field Engineer" value="${t?esc(t.role):'Field Engineer'}"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label>Zone</label><input id="sa-zone" type="text" placeholder="e.g. Moshi Rural" value="${t?esc(t.zone):''}"></div>
+        <div class="form-group"><label>Status</label><select id="sa-status">
+          <option value="active" ${!t||t.status==='active'?'selected':''}>Active</option>
+          <option value="onsite" ${t&&t.status==='onsite'?'selected':''}>On Site</option>
+          <option value="remote" ${t&&t.status==='remote'?'selected':''}>Remote</option></select></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group"><label>Email</label><input id="sa-email" type="email" placeholder="name@questforward.org" value="${t?esc(t.email):''}"></div>
+        <div class="form-group"><label>Phone</label><input id="sa-phone" type="text" placeholder="+255 ..." value="${t?esc(t.phone):''}"></div>
+      </div>
+      <div class="form-group"><label>Assigned Schools — this sub-admin will manage only the schools ticked below</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:220px;overflow:auto;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px">
+          ${S.schools.map(s=>{ const cur=teamById(s.admin); const taken = s.admin && (!t || s.admin!==t.id);
+            return `<label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);cursor:pointer">
+              <input type="checkbox" class="sa-school" value="${s.id}" ${mine.has(s.id)?'checked':''}>
+              <span style="flex:1">${esc(s.name)}</span>
+              ${taken?`<span style="font-size:10px;color:var(--text3)">now: ${esc(cur?cur.name:'—')}</span>`:''}
+            </label>`; }).join('')}
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px"><i class="ti ti-info-circle"></i> Ticking a school already assigned to someone else transfers it to this sub-admin. Their role-scoped view will show only these schools.</div>
+      </div>
+    </div>`;
+  openModal(t?`Edit Sub-Admin — ${t.name}`:'Add Sub-Admin', body,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-primary" onclick="saveSubadmin('${id||''}')"><i class="ti ti-check"></i> ${t?'Save Changes':'Add Sub-Admin'}</button>`, true);
+}
+async function saveSubadmin(id){
+  const name=$('sa-name').value.trim();
+  if(!name){ showToast('Please enter the sub-admin\'s name'); return; }
+  let t = id ? teamById(id) : null;
+  if(!t){
+    t = { id: nextSAId(name), color: nextSAColor() };
+    S.team.push(t);
+  }
+  t.name=name;
+  t.role=$('sa-role').value.trim()||'Field Engineer';
+  t.zone=$('sa-zone').value.trim()||'—';
+  t.email=$('sa-email').value.trim();
+  t.phone=$('sa-phone').value.trim();
+  t.status=$('sa-status').value;
+  // apply school assignments
+  const ticked = new Set(Array.from(document.querySelectorAll('.sa-school:checked')).map(cb=>cb.value));
+  S.schools.forEach(s=>{
+    if (ticked.has(s.id)) s.admin = t.id;                 // assign / transfer to this sub-admin
+    else if (s.admin === t.id) s.admin = '';              // un-ticked: release this school
+  });
+  await persist(); closeModal(); buildRoleOptions(); render();
+  showToast(`${t.name} ${id?'updated':'added'} — managing ${[...ticked].length} school(s)`);
+}
+
+/* --- Remove sub-admin --- */
+function confirmRemoveSubadmin(id){
+  if (activeRole!=='admin'){ showToast('Only the System Admin can manage sub-admins'); return; }
+  const t=teamById(id); if(!t) return;
+  const mySchools=S.schools.filter(s=>s.admin===id);
+  const others=S.team.filter(x=>x.id!==id);
+  openModal('Remove Sub-Admin',
+    `<div style="font-size:13px;color:var(--text2);line-height:1.7">
+      Remove <b style="color:var(--text)">${esc(t.name)}</b> from the team?
+      ${mySchools.length?`<br><br>They currently manage <b>${mySchools.length} school(s)</b>: ${mySchools.map(s=>esc(s.name)).join(', ')}.<br>Choose who takes over these schools:`:'<br><br>They have no schools assigned.'}
+     </div>
+     ${mySchools.length?`<div class="form-group" style="margin-top:12px"><label>Reassign their schools to</label>
+       <select id="sa-takeover"><option value="">— Leave unassigned —</option>${others.map(o=>`<option value="${o.id}">${esc(o.name)} — ${esc(o.role)}</option>`).join('')}</select></div>`:''}`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-danger" onclick="removeSubadmin('${id}')"><i class="ti ti-trash"></i> Remove</button>`);
+}
+async function removeSubadmin(id){
+  const t=teamById(id); if(!t) return;
+  const takeover = $('sa-takeover') ? $('sa-takeover').value : '';
+  S.schools.forEach(s=>{ if(s.admin===id) s.admin=takeover; });
+  S.errors.forEach(e=>{ if(e.assigned===id) e.assigned=takeover; });
+  S.team = S.team.filter(x=>x.id!==id);
+  if (activeSubadmin===id) activeSubadmin = S.team[0] ? S.team[0].id : '';
+  await persist(); closeModal(); buildRoleOptions(); render();
+  showToast(`${t.name} removed${takeover?` — schools transferred to ${teamById(takeover).name}`:''}`);
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+function openModal(title, bodyHtml, footerHtml, wide){
+  $('modal-title').textContent=title;
+  $('modal-body').innerHTML=bodyHtml;
+  $('modal-footer').innerHTML=footerHtml;
+  $('modal-box').classList.toggle('wide', !!wide);
+  $('modal').classList.add('open');
+}
+function closeModal(){ $('modal').classList.remove('open'); }
+
+/* --- Error detail --- */
+function openErrorModal(id){
+  const e=S.errors.find(x=>x.id===id); if(!e) return;
+  const sc=schoolById(e.school); const t=teamById(e.assigned); const breach=slaState(e)==='breach';
+  const body=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span class="badge ${PRI[e.priority].badge}">${PRI[e.priority].label}</span>
+      <span class="badge ${STAT[e.status].badge}">${STAT[e.status].label}</span>
+      ${breach?'<span class="badge badge-red"><span class="dot dot-red"></span>SLA Breach</span>':''}
+      <span style="margin-left:auto" class="error-id">${e.id}</span>
+    </div>
+    <div style="font-size:16px;font-weight:600;margin-bottom:4px">${esc(e.title)}</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:16px">${esc(sc.name)} · ${e.cat} · age ${ageStr(e.hours)} (SLA ${SLA[e.priority]}h)</div>
+    <div style="background:var(--bg3);border-radius:8px;padding:12px;font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px">${esc(e.desc||'No description')}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px;color:var(--text2)">
+      <div><div style="color:var(--text3);font-size:11px">ASSIGNED TO</div>${esc(t?t.name:'Unassigned')}</div>
+      ${e.reporter?`<div><div style="color:var(--text3);font-size:11px">REPORTED BY</div>${esc(e.reporter)}</div>`:''}
+      ${e.location?`<div><div style="color:var(--text3);font-size:11px">LOCATION</div>${esc(e.location)}</div>`:''}
+      <div><div style="color:var(--text3);font-size:11px">SUB-ADMIN</div>${esc(teamById(sc.admin)?.name||'—')}</div>
+    </div>`;
+  const footer = e.status!=='resolved'
+    ? `<button class="btn btn-secondary" onclick="closeModal();openUpdateModal('${e.id}')"><i class="ti ti-message"></i> Add Update</button>
+       <button class="btn btn-success" onclick="markResolved('${e.id}');closeModal()"><i class="ti ti-check"></i> Mark Resolved</button>`
+    : `<button class="btn btn-secondary" onclick="closeModal()">Close</button>`;
+  openModal('Error Detail', body, footer);
+}
+
+/* --- Update / communication note --- */
+function openUpdateModal(errId, schoolId){
+  const e = errId ? S.errors.find(x=>x.id===errId) : null;
+  const presetSchool = schoolId || (e?e.school:'');
+  const title = e ? `Add Update — ${e.id}` : 'Add Communication Note';
+  const body=`
+    <div style="display:flex;flex-direction:column;gap:14px">
+      ${!e?`<div class="form-group"><label>School</label><select id="m-school">${visibleSchools().map(s=>`<option value="${s.id}" ${s.id===presetSchool?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>`:''}
+      <div class="form-group"><label>Update Type</label><select id="m-type">
+        <option>Progress Update</option><option>School Communication</option><option>Part Ordered</option><option>Technician Dispatched</option><option>Awaiting Parts</option><option>Escalation Note</option></select></div>
+      <div class="form-group"><label>Note *</label><textarea id="m-note" placeholder="Describe status, actions taken, or communication with the school…"></textarea></div>
+      <div class="form-group"><label>Recorded By</label><input id="m-by" type="text" placeholder="Your name" value="${esc(teamById(activeSubadmin)?.name||'')}"></div>
+    </div>`;
+  openModal(title,body,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-primary" onclick="saveUpdate('${errId||''}')"><i class="ti ti-send"></i> Save</button>`);
+}
+async function saveUpdate(errId){
+  const note=$('m-note').value.trim(); if(!note){ showToast('Please enter a note'); return; }
+  const by=$('m-by').value.trim()||'Field Team';
+  const school = errId ? S.errors.find(x=>x.id===errId).school : ($('m-school')?$('m-school').value:'');
+  S.comms.unshift({ school, by, when:new Date().toISOString(), text:note });
+  await persist(); closeModal(); render();
+  showToast('Update saved & school notified');
+}
+
+/* --- Weekly check-in --- */
+function openCheckinModal(schoolId, week){
+  const s=schoolById(schoolId); const existing=(S.checkins[schoolId]||{})[week];
+  const body=`
+    <div style="font-size:13px;color:var(--text3);margin-bottom:16px">${esc(s.name)} · Week ${week} of ${TERM.weeks} · ${TERM.label}</div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="form-group"><label>Overall Status</label><select id="ck-status">
+        <option value="green" ${existing&&existing.status==='green'?'selected':''}>🟢 Healthy — all systems normal</option>
+        <option value="amber" ${existing&&existing.status==='amber'?'selected':''}>🟡 Minor issues — monitored</option>
+        <option value="red" ${existing&&existing.status==='red'?'selected':''}>🔴 Problems — needs action</option></select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        ${['connectivity','tablets','platform','power'].map(k=>`<div class="form-group"><label style="text-transform:capitalize">${k}</label>
+          <select id="ck-${k}"><option value="ok" ${existing&&existing[k]==='ok'?'selected':''}>OK</option><option value="issue" ${existing&&existing[k]==='issue'?'selected':''}>Issue</option><option value="na" ${existing&&existing[k]==='na'?'selected':''}>N/A</option></select></div>`).join('')}
+      </div>
+      <div class="form-group"><label>Visit Notes</label><textarea id="ck-note" placeholder="What was checked, found, or actioned this week…">${existing?esc(existing.note||''):''}</textarea></div>
+      <div class="form-group"><label>Checked By</label><input id="ck-by" type="text" value="${existing?esc(existing.by):esc(teamById(s.admin)?.name||'')}"></div>
+    </div>`;
+  openModal('Weekly Check-In', body,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-primary" onclick="saveCheckin('${schoolId}',${week})"><i class="ti ti-clipboard-check"></i> ${existing?'Update':'Record'} Check-In</button>`);
+}
+async function saveCheckin(schoolId, week){
+  if(!S.checkins[schoolId]) S.checkins[schoolId]={};
+  S.checkins[schoolId][week]={
+    week, status:$('ck-status').value, by:$('ck-by').value.trim()||'Field Team', when:new Date().toISOString(),
+    connectivity:$('ck-connectivity').value, tablets:$('ck-tablets').value, platform:$('ck-platform').value, power:$('ck-power').value,
+    note:$('ck-note').value.trim()
+  };
+  await persist(); closeModal(); render();
+  showToast(`Week ${week} check-in recorded for ${schoolById(schoolId).name}`);
+}
+
+/* --- Reassign sub-admin --- */
+function openAssignModal(schoolId){
+  const s=schoolById(schoolId);
+  openModal('Reassign Sub-Admin',
+    `<div style="font-size:13px;color:var(--text3);margin-bottom:14px">Assign a sub-admin (field engineer) to <b style="color:var(--text)">${esc(s.name)}</b>.</div>
+     <div class="form-group"><label>Sub-Admin</label><select id="as-admin">${S.team.map(t=>`<option value="${t.id}" ${t.id===s.admin?'selected':''}>${esc(t.name)} — ${esc(t.role)}</option>`).join('')}</select></div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-primary" onclick="saveAssign('${schoolId}')"><i class="ti ti-check"></i> Save</button>`);
+}
+async function saveAssign(schoolId){
+  const s=schoolById(schoolId); s.admin=$('as-admin').value;
+  await persist(); closeModal(); render();
+  showToast(`${s.name} reassigned to ${teamById(s.admin).name}`);
+}
+
+/* --- Resolve --- */
+async function markResolved(id){
+  const e=S.errors.find(x=>x.id===id); if(!e) return;
+  e.status='resolved'; await persist(); render();
+  showToast(`${id} marked resolved`);
+}
+
+/* ============================================================
+   EXPORT / RESET
+   ============================================================ */
+function exportData(){
+  const rows=[['ID','Title','School','Category','Priority','Status','Assigned','AgeHours','Created','Description']];
+  S.errors.forEach(e=>{ const sc=schoolById(e.school);
+    rows.push([e.id,e.title,sc.name,e.cat,e.priority,e.status,teamById(e.assigned)?.name||'',e.hours,e.created||'',(e.desc||'').replace(/\n/g,' ')]); });
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='qft_errors_export.csv'; a.click(); URL.revokeObjectURL(url);
+  showToast('Error log exported as CSV');
+}
+function confirmReset(){
+  openModal('Reset Demo Data',
+    `<div style="font-size:13px;color:var(--text2);line-height:1.6">This clears all saved data and restores the original demo schools, errors and check-ins. This cannot be undone.</div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+     <button class="btn btn-danger" onclick="doReset()"><i class="ti ti-refresh"></i> Reset Everything</button>`);
+}
+async function doReset(){
+  await dbSet('qft_state_v2', null);
+  S={ schools:[], team:[], errors:[], checkins:{}, followups:[], comms:[], guides:[], manuals:[], seq:242 };
+  await loadState(); closeModal(); buildRoleOptions(); showPage('dashboard');
+  showToast('Demo data reset');
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(async function init(){
+  await loadState();
+  buildRoleOptions();
+  $('role-select').value='admin::';
+  showPage('dashboard');
+})();
+
+</script>
+</body>
+</html>
